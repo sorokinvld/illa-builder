@@ -91,9 +91,7 @@ export const TABLE_PANEL_CONFIG: PanelConfig[] = [
             labelName: i18n.t("editor.inspect.setter_label.mapped_value"),
             attrName: "mappedValue",
             bindAttrName: ["type"],
-            shown: (value) => value === "button",
             setterType: "INPUT_SETTER",
-            expectedType: VALIDATION_TYPES.STRING,
           },
           {
             id: `${baseWidgetName}-basic-enableSorting`,
