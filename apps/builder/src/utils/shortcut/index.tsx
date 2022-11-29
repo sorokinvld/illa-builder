@@ -1,9 +1,8 @@
 import { FC, useCallback, useEffect, useState } from "react"
 import { ShortCutContext } from "@/utils/shortcut/shortcutProvider"
 import hotkeys from "hotkeys-js"
-import { Modal } from "@illa-design/modal"
+import { createModal, Modal } from "@illa-design/modal"
 import { componentsActions } from "@/redux/currentApp/editor/components/componentsSlice"
-import { Message } from "@illa-design/message"
 import { configActions } from "@/redux/config/configSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -26,12 +25,14 @@ import {
 } from "@/redux/currentApp/editor/components/componentsSelector"
 import { ComponentNode } from "@/redux/currentApp/editor/components/componentsState"
 import { getExecutionResult } from "@/redux/currentApp/executionTree/executionSelector"
+import { useMessage } from "@illa-design/message"
 
 export const Shortcut: FC = ({ children }) => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
 
   const mode = useSelector(getIllaMode)
+  const message = useMessage()
 
   const currentSelectedComponent = useSelector(getSelectedComponents)
   const currentSelectedComponentNode = useSelector<RootState, ComponentNode[]>(
@@ -55,7 +56,9 @@ export const Shortcut: FC = ({ children }) => {
     "command+s,ctrl+s",
     (event) => {
       event.preventDefault()
-      Message.success(t("dont_need_save"))
+      message.success({
+        content: t("dont_need_save"),
+      })
     },
     {
       enabled: mode === "edit",
@@ -64,23 +67,23 @@ export const Shortcut: FC = ({ children }) => {
   )
 
   // shortcut
-  const [alreadyShowDeleteDialog, setAlreadyShowDeleteDialog] = useState<
-    boolean
-  >(false)
+  const [alreadyShowDeleteDialog, setAlreadyShowDeleteDialog] =
+    useState<boolean>(false)
 
   const showDeleteDialog = (
     displayName: string[],
     type?: "widget" | "page",
     options?: Record<string, any>,
   ) => {
+    const modal = createModal()
     if (!alreadyShowDeleteDialog && displayName.length > 0) {
       const textList = displayName.join(", ").toString()
       setAlreadyShowDeleteDialog(true)
-      Modal.confirm({
+      modal.show({
         title: t("editor.component.delete_title", {
           displayName: textList,
         }),
-        content: t("editor.component.delete_content", {
+        children: t("editor.component.delete_content", {
           displayName: textList,
         }),
         cancelText: t("editor.component.cancel"),

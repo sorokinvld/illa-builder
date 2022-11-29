@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { Input, Password } from "@illa-design/input"
 import { Button } from "@illa-design/button"
-import { WarningCircleIcon } from "@illa-design/icon"
+import { PreIcon, WarningCircleIcon } from "@illa-design/icon"
 import { Link } from "@illa-design/link"
-import { Message } from "@illa-design/message"
 import { Countdown } from "@illa-design/statistic"
 import { EMAIL_FORMAT } from "@/constants/regExp"
 import { Api } from "@/api/base"
@@ -19,14 +18,19 @@ import {
   gridValidStyle,
   errorMsgStyle,
   errorIconStyle,
+  resetPasswordSubtitleWrapperStyle,
+  prevIconStyle,
+  hotspotWrapperStyle,
 } from "@/page/User/style"
 import { ResetPwdFields } from "./interface"
+import { useMessage } from "@illa-design/message"
 
 export const ResetPassword: FC = () => {
   const [submitLoading, setSubmitLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState({ email: "", verificationCode: "" })
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const message = useMessage()
   const [verificationToken, setVerificationToken] = useState("")
   const [showCountDown, setShowCountDown] = useState(false)
   const {
@@ -50,10 +54,14 @@ export const ResetPassword: FC = () => {
       },
       () => {
         navigate("/user/login")
-        Message.success(t("user.forgot_password.tips.success"))
+        message.success({
+          content: t("user.forgot_password.tips.success"),
+        })
       },
       (res) => {
-        Message.error(t("user.forgot_password.tips.fail"))
+        message.error({
+          content: t("user.forgot_password.tips.fail"),
+        })
         switch (res.data.errorMessage) {
           case "no such user":
             setErrorMsg({
@@ -73,16 +81,34 @@ export const ResetPassword: FC = () => {
         }
       },
       () => {
-        Message.warning(t("network_error"))
+        message.warning({
+          content: t("network_error"),
+        })
       },
       (loading) => {
         setSubmitLoading(loading)
       },
     )
   }
+
+  const onClickBackToLogin = () => {
+    navigate("/user/login")
+  }
+
   return (
     <form css={gridFormStyle} onSubmit={handleSubmit(onSubmit)}>
-      <header css={formTitleStyle}>{t("user.forgot_password.title")}</header>
+      <header css={formTitleStyle}>
+        {t("user.forgot_password.title")}
+        <div
+          css={resetPasswordSubtitleWrapperStyle}
+          onClick={onClickBackToLogin}
+        >
+          <span css={hotspotWrapperStyle}>
+            <PreIcon css={prevIconStyle} />
+            {t("user.forgot_password.subtitle")}
+          </span>
+        </div>
+      </header>
       <section css={gridFormFieldStyle}>
         <section css={gridItemStyle}>
           <label css={formLabelStyle}>
@@ -178,21 +204,25 @@ export const ResetPassword: FC = () => {
                                 },
                               },
                               (res) => {
-                                Message.success(
-                                  t(
+                                message.success({
+                                  content: t(
                                     "user.forgot_password.tips.verification_code",
                                   ),
-                                )
+                                })
                                 setVerificationToken(res.data.verificationToken)
                               },
                               () => {
-                                Message.error(
-                                  t("user.forgot_password.tips.fail_sent"),
-                                )
+                                message.error({
+                                  content: t(
+                                    "user.forgot_password.tips.fail_sent",
+                                  ),
+                                })
                                 setShowCountDown(false)
                               },
                               () => {
-                                Message.warning(t("network_error"))
+                                message.warning({
+                                  content: t("network_error"),
+                                })
                                 setShowCountDown(false)
                               },
                               () => {},
@@ -238,26 +268,16 @@ export const ResetPassword: FC = () => {
                   size="large"
                   error={!!errors.newPassword}
                   variant="fill"
-                  placeholder={t(
-                    "user.forgot_password.placeholder.newPassword",
-                  )}
+                  placeholder={t("user.password.placeholder")}
                 />
               )}
               rules={{
                 required: t(
                   "user.forgot_password.error_message.newPassword.require",
                 ),
-                maxLength: {
-                  value: 20,
-                  message: t(
-                    "user.forgot_password.error_message.newPassword.length",
-                  ),
-                },
                 minLength: {
                   value: 6,
-                  message: t(
-                    "user.forgot_password.error_message.newPassword.length",
-                  ),
+                  message: t("user.sign_in.error_message.password.min_length"),
                 },
               }}
             />

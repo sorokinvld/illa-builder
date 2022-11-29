@@ -1,13 +1,25 @@
-import { createContext, ReactNode, FC, useState, useCallback } from "react"
-import { NotificationType, Notification } from "@illa-design/notification"
+import {
+  createContext,
+  ReactNode,
+  FC,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react"
+import {
+  NotificationType,
+  Notification,
+  createNotification,
+} from "@illa-design/notification"
 import { isValidUrlScheme } from "@/utils/typeHelper"
 import { useSelector } from "react-redux"
 import { getCurrentUser } from "@/redux/currentUser/currentUserSelector"
 import { getBuilderInfo } from "@/redux/builderInfo/builderInfoSelector"
 import { cloneDeep, unset } from "lodash"
+import { getExecutionResult } from "@/redux/currentApp/executionTree/executionSelector"
 
 interface Injected {
-  globalData: { [key: string]: any }
   handleUpdateGlobalData: (key: string, value: any) => void
   handleDeleteGlobalData: (key: string) => void
 }
@@ -20,7 +32,6 @@ interface Props {
 
 export let BUILDER_CALC_CONTEXT = {}
 
-// {{showNotification("info","222","333")}}
 export const showNotification = (params: {
   type: NotificationType
   title: string
@@ -28,11 +39,12 @@ export const showNotification = (params: {
   duration: number
 }) => {
   const { type, title, description, duration = 4500 } = params
-  if (!type) return
-  Notification[type]({
+  const notification = createNotification()
+  notification.show({
     title,
     content: description,
     duration,
+    type,
   })
 }
 
@@ -67,34 +79,30 @@ const initState = {
 export const GlobalDataProvider: FC<Props> = ({ children }) => {
   const userInfo = useSelector(getCurrentUser)
   const builderInfo = useSelector(getBuilderInfo)
-  const [globalData, setGlobalData] = useState<Record<string, any>>({
+
+  const globalDataRef = useRef<Record<string, any>>({
     ...initState,
     currentUser: userInfo,
     builderInfo,
   })
 
   const handleUpdateGlobalData = useCallback((key: string, value: any) => {
-    setGlobalData((prevState) => ({
-      ...prevState,
+    BUILDER_CALC_CONTEXT = {
+      ...BUILDER_CALC_CONTEXT,
       [key]: value,
-    }))
+    }
   }, [])
 
   const handleDeleteGlobalData = useCallback((key: string) => {
-    setGlobalData((prevState) => {
-      const newGlobalData = cloneDeep(prevState)
-      unset(newGlobalData, key)
-      return newGlobalData
-    })
+    unset(BUILDER_CALC_CONTEXT, key)
   }, [])
 
   const value = {
-    globalData: { ...globalData },
     handleUpdateGlobalData,
     handleDeleteGlobalData,
   }
 
-  BUILDER_CALC_CONTEXT = globalData
+  BUILDER_CALC_CONTEXT = globalDataRef.current
 
   return (
     <GLOBAL_DATA_CONTEXT.Provider value={value}>

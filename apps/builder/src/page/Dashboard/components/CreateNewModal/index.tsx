@@ -4,12 +4,12 @@ import { useDispatch } from "react-redux"
 import { useTranslation } from "react-i18next"
 import { Input } from "@illa-design/input"
 import { Modal } from "@illa-design/modal"
-import { Message } from "@illa-design/message"
 import { DashboardApp } from "@/redux/dashboard/apps/dashboardAppState"
 import { Api } from "@/api/base"
 import { dashboardAppActions } from "@/redux/dashboard/apps/dashboardAppSlice"
 import { useNavigate } from "react-router-dom"
 import { BASIC_APP_CONFIG } from "@/config/newAppConfig"
+import { useMessage } from "@illa-design/message"
 
 export const CreateNewModal: FC<CreateNewModalProps> = (props) => {
   const { visible, onVisibleChange } = props
@@ -19,12 +19,12 @@ export const CreateNewModal: FC<CreateNewModalProps> = (props) => {
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
+  const message = useMessage()
   const [name, setName] = useState<string>()
 
   return (
     <Modal
       w="496px"
-      simple
       closable
       autoFocus
       footerAlign="right"
@@ -32,14 +32,16 @@ export const CreateNewModal: FC<CreateNewModalProps> = (props) => {
         colorScheme: "techPurple",
       }}
       visible={visible}
-      confirmLoading={loading}
+      okLoading={loading}
       onCancel={() => {
         onVisibleChange(false)
       }}
       cancelText={t("dashboard.common.cancel")}
       onOk={() => {
         if (name === undefined || name === "") {
-          Message.error(t("dashboard.app.name_empty"))
+          message.error({
+            content: t("dashboard.app.name_empty"),
+          })
           return
         }
         Api.request<DashboardApp>(
@@ -66,7 +68,7 @@ export const CreateNewModal: FC<CreateNewModalProps> = (props) => {
           },
           (errorState) => {
             if (errorState) {
-              Message.error({ content: t("create_fail") })
+              message.error({ content: t("create_fail") })
             }
           },
         )

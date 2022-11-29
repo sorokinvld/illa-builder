@@ -1,5 +1,5 @@
 import { css, Global } from "@emotion/react"
-import { BrowserRouter, RouterProvider } from "react-router-dom"
+import { RouterProvider } from "react-router-dom"
 import { globalStyle } from "./style"
 import { ConfigProvider } from "@illa-design/config-provider"
 import "@/api/base"
@@ -14,6 +14,9 @@ import {
 import { useEffect } from "react"
 import { ILLARoute } from "@/router"
 import { useTranslation } from "react-i18next"
+import { MessageGroup } from "@illa-design/message"
+import { NotificationGroup } from "@illa-design/notification"
+import { ModalGroup } from "@illa-design/modal"
 
 function App() {
   const configLanguage = useSelector(getCurrentConfigLanguage)
@@ -31,6 +34,9 @@ function App() {
       <GlobalDataProvider>
         <ConfigProvider locale={configLanguage}>
           <Global styles={css(globalStyle)} />
+          <MessageGroup />
+          <NotificationGroup />
+          <ModalGroup />
           <RouterProvider router={ILLARoute} />
         </ConfigProvider>
       </GlobalDataProvider>

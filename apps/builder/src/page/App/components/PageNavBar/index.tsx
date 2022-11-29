@@ -2,6 +2,8 @@ import { FC, useCallback, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 import { ReactComponent as Logo } from "@/assets/illa-logo.svg"
+import { ReactComponent as SnowIcon } from "@/assets/snow-icon.svg"
+
 import {
   BugIcon,
   CaretRightIcon,
@@ -14,13 +16,13 @@ import {
   WindowRightIcon,
 } from "@illa-design/icon"
 import { Trigger } from "@illa-design/trigger"
-import { Message } from "@illa-design/message"
 import { Button, ButtonGroup } from "@illa-design/button"
 import { PageNavBarProps } from "@/page/App/components/PageNavBar/interface"
 import { configActions } from "@/redux/config/configSlice"
 import {
   getFreezeState,
   getIllaMode,
+  getIsOnline,
   isOpenBottomPanel,
   isOpenDebugger,
   isOpenLeftPanel,
@@ -34,6 +36,7 @@ import {
   nameStyle,
   navBarStyle,
   rowCenter,
+  saveFailedTipStyle,
   viewControlStyle,
   windowIconBodyStyle,
   windowIconStyle,
@@ -44,11 +47,13 @@ import { DeployResp } from "@/page/App/components/PageNavBar/resp"
 import { fromNow } from "@/utils/dayjs"
 import { globalColor, illaPrefix } from "@illa-design/theme"
 import { getExecutionDebuggerData } from "@/redux/currentApp/executionTree/executionSelector"
+import { useMessage } from "@illa-design/message"
 
 export const PageNavBar: FC<PageNavBarProps> = (props) => {
   const { className } = props
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const message = useMessage()
 
   const appInfo = useSelector(getAppInfo)
   const leftPanelVisible = useSelector(isOpenLeftPanel)
@@ -56,6 +61,7 @@ export const PageNavBar: FC<PageNavBarProps> = (props) => {
   const bottomPanelVisible = useSelector(isOpenBottomPanel)
   const debuggerVisible = useSelector(isOpenDebugger)
   const isFreezeCanvas = useSelector(getFreezeState)
+  const isOnline = useSelector(getIsOnline)
 
   const debuggerData = useSelector(getExecutionDebuggerData)
 
@@ -95,10 +101,14 @@ export const PageNavBar: FC<PageNavBarProps> = (props) => {
         )
       },
       (e) => {
-        Message.error(t("editor.deploy.fail"))
+        message.error({
+          content: t("editor.deploy.fail"),
+        })
       },
       (e) => {
-        Message.error(t("editor.deploy.fail"))
+        message.error({
+          content: t("editor.deploy.fail"),
+        })
       },
       (loading) => {
         setDeployLoading(loading)
@@ -121,9 +131,16 @@ export const PageNavBar: FC<PageNavBarProps> = (props) => {
         />
         <div css={informationStyle}>
           <div css={nameStyle}>{appInfo?.appName}</div>
-          <div css={descriptionStyle}>
-            {t("edit_at") + " " + fromNow(appInfo?.updatedAt)}
-          </div>
+          {isOnline ? (
+            <div css={descriptionStyle}>
+              {t("edit_at") + " " + fromNow(appInfo?.updatedAt)}
+            </div>
+          ) : (
+            <div css={saveFailedTipStyle}>
+              <SnowIcon />
+              <span> {t("edit_failed")}</span>
+            </div>
+          )}
         </div>
       </div>
       <div css={viewControlStyle}>

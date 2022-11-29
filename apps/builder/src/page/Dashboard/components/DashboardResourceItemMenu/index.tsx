@@ -6,17 +6,17 @@ import { Dropdown, DropList } from "@illa-design/dropdown"
 import { Button } from "@illa-design/button"
 import { MoreIcon } from "@illa-design/icon"
 import { globalColor, illaPrefix } from "@illa-design/theme"
-import { Modal } from "@illa-design/modal"
+import { Modal, useModal } from "@illa-design/modal"
 import { Api } from "@/api/base"
 import { Resource, ResourceContent } from "@/redux/resource/resourceState"
 import { resourceActions } from "@/redux/resource/resourceSlice"
-import { Message } from "@illa-design/message"
 import { Space } from "@illa-design/space"
 import { buttonVisibleStyle } from "@/page/Dashboard/components/DashboardResourceItemMenu/style"
 import { ResourceCreator } from "@/page/Dashboard/components/ResourceGenerator/ResourceCreator"
 import { RootState } from "@/store"
 import { getResourceNameFromResourceType } from "@/utils/actionResourceTransformer"
 import { modalContentStyle } from "@/page/Dashboard/components/ResourceGenerator/style"
+import { useMessage } from "@illa-design/message"
 
 const Item = DropList.Item
 
@@ -34,6 +34,9 @@ export const DashboardResourceItemMenu: FC<DashboardResourceItemMenuProps> = (
   const resource = useSelector((state: RootState) => {
     return state.resource.find((item) => item.resourceId === resourceId)!!
   })
+
+  const message = useMessage()
+  const modal = useModal()
 
   return (
     <>
@@ -66,10 +69,10 @@ export const DashboardResourceItemMenu: FC<DashboardResourceItemMenuProps> = (
                 title={t("dashboard.common.delete")}
                 fontColor={globalColor(`--${illaPrefix}-red-03`)}
                 onClick={() => {
-                  Modal.confirm({
-                    confirmLoading: confirmLoading,
+                  modal.show({
+                    okLoading: confirmLoading,
                     title: t("dashboard.common.delete_title"),
-                    content: t("dashboard.common.delete_content"),
+                    children: t("dashboard.common.delete_content"),
                     cancelText: t("dashboard.common.delete_cancel_text"),
                     okText: t("dashboard.common.delete_ok_text"),
                     okButtonProps: {
@@ -89,17 +92,21 @@ export const DashboardResourceItemMenu: FC<DashboardResourceItemMenuProps> = (
                                 response.data.resourceId,
                               ),
                             )
-                            Message.success(
-                              t("dashboard.resource.delete_success"),
-                            )
+                            message.success({
+                              content: t("dashboard.resource.delete_success"),
+                            })
                             resolve("finish")
                           },
                           (failure) => {
-                            Message.error(t("dashboard.resource.delete_fail"))
+                            message.error({
+                              content: t("dashboard.resource.delete_fail"),
+                            })
                             resolve("finish")
                           },
                           (crash) => {
-                            Message.error(t("network_error"))
+                            message.error({
+                              content: t("network_error"),
+                            })
                             resolve("finish")
                           },
                           (loading) => {
