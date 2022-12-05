@@ -1,12 +1,12 @@
-import { ReactComponent as ListWidgetIcon } from "@/assets/widgetCover/list.svg"
-import { WidgetConfig } from "@/widgetLibrary/interface"
-import i18n from "@/i18n/config"
-import { OVERFLOW_TYPE } from "@/widgetLibrary/ListWidget/interface"
-import { BasicContainerConfig } from "@/widgetLibrary/BasicContainer/BasicContainer"
-import { TEXT_WIDGET_CONFIG } from "@/widgetLibrary/TextWidget"
-import { IMAGE_WIDGET_CONFIG } from "@/widgetLibrary/ImageWidget"
-import { BUTTON_WIDGET_CONFIG } from "@/widgetLibrary/ButtonWidget"
 import { v4 } from "uuid"
+import { ReactComponent as ListWidgetIcon } from "@/assets/widgetCover/list.svg"
+import i18n from "@/i18n/config"
+import { BasicContainerConfig } from "@/widgetLibrary/BasicContainer/BasicContainer"
+import { BUTTON_WIDGET_CONFIG } from "@/widgetLibrary/ButtonWidget"
+import { IMAGE_WIDGET_CONFIG } from "@/widgetLibrary/ImageWidget"
+import { OVERFLOW_TYPE } from "@/widgetLibrary/ListWidget/interface"
+import { TEXT_WIDGET_CONFIG } from "@/widgetLibrary/TextWidget"
+import { WidgetConfig } from "@/widgetLibrary/interface"
 
 export const LIST_WIDGET_CONFIG: WidgetConfig = {
   type: "LIST_WIDGET",
@@ -30,7 +30,7 @@ export const LIST_WIDGET_CONFIG: WidgetConfig = {
           defaults: {
             ...TEXT_WIDGET_CONFIG.defaults,
             value:
-              "{{templateDisplayName.dataSources.map((currentItem) => ('# ' + currentItem.name))}}",
+              "{{templateDisplayName.dataSources.map((currentItem) => ('## ' + currentItem.name))}}",
             $dynamicAttrPaths: ["value"],
           },
         },
@@ -98,23 +98,23 @@ export const LIST_WIDGET_CONFIG: WidgetConfig = {
     selectedItem: {
       name: "user1",
       email: "user1@illasoft.com",
-      img: "https://images.unsplash.com/photo-1614853316476-de00d14cb1fc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80",
+      img: "https://cdn.dribbble.com/users/693674/screenshots/20021608/media/d12b3f2b117d71626f17ee2dfd48681f.png",
     },
     dataSources: `{{[
   {
     "name": "user1",
     "email": "user1@illasoft.com",
-    "img": "https://images.unsplash.com/photo-1614853316476-de00d14cb1fc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80"
+    "img": "https://cdn.dribbble.com/users/693674/screenshots/20021608/media/d12b3f2b117d71626f17ee2dfd48681f.png"
   },
   {
     "name": "user2",
     "email": "user2@illasoft.com",
-    "img": "https://images.unsplash.com/photo-1614853316476-de00d14cb1fc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80"
+    "img": "https://cdn.dribbble.com/users/693674/screenshots/20021608/media/d12b3f2b117d71626f17ee2dfd48681f.png"
   },
   {
     "name": "user3",
     "email": "user3@illasoft.com",
-    "img": "https://images.unsplash.com/photo-1614853316476-de00d14cb1fc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2370&q=80"
+    "img": "https://cdn.dribbble.com/users/693674/screenshots/20021608/media/d12b3f2b117d71626f17ee2dfd48681f.png"
   }
 ]}}`,
   },

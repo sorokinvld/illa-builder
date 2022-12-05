@@ -1,9 +1,6 @@
 import i18n from "@/i18n/config"
+import { EventHandlerPanelConfig } from "@/page/App/components/InspectPanel/interface"
 import { VALIDATION_TYPES } from "@/utils/validationFactory"
-import {
-  EventHandlerPanelConfig,
-  PanelFieldConfig,
-} from "@/page/App/components/InspectPanel/interface"
 
 export const generatorEventHandlerConfig = (
   baseWidgetName: string,

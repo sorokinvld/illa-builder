@@ -1,12 +1,13 @@
-import { PanelConfig } from "@/page/App/components/InspectPanel/interface"
 import i18n from "@/i18n/config"
+import { PanelConfig } from "@/page/App/components/InspectPanel/interface"
 import { VALIDATION_TYPES } from "@/utils/validationFactory"
 import { generatorEventHandlerConfig } from "@/widgetLibrary/PublicSector/utils/generatorEventHandlerConfig"
-import { ColumnTypeOption } from "@/widgetLibrary/TableWidget/interface"
+import { generatorTableEventHandlerConfig } from "@/widgetLibrary/PublicSector/utils/generatorTableEventHandlerConfig"
 import {
   TABLE_BUTTON_EVENT_HANDLER_CONFIG,
   TABLE_EVENT_HANDLER_CONFIG,
 } from "@/widgetLibrary/TableWidget/eventHandlerConfig"
+import { ColumnTypeOption } from "@/widgetLibrary/TableWidget/interface"
 
 const baseWidgetName = "table"
 
@@ -106,7 +107,7 @@ export const TABLE_PANEL_CONFIG: PanelConfig[] = [
           {
             bindAttrName: ["type"],
             shown: (value) => value === "button",
-            ...generatorEventHandlerConfig(
+            ...generatorTableEventHandlerConfig(
               baseWidgetName,
               TABLE_BUTTON_EVENT_HANDLER_CONFIG.events,
             ),

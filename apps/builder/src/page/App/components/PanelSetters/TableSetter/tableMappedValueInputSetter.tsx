@@ -1,12 +1,12 @@
-import { FC, useMemo } from "react"
-import { CodeEditor } from "@/components/CodeEditor"
-import { JSToString, stringToJS } from "@/utils/evaluateDynamicString/utils"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store"
-import { getExecutionResult } from "@/redux/currentApp/executionTree/executionSelector"
 import { get } from "lodash"
-import { applyInputSetterWrapperStyle } from "@/page/App/components/PanelSetters/InputSetter/style"
+import { FC, useMemo } from "react"
+import { useSelector } from "react-redux"
+import { CodeEditor } from "@/components/CodeEditor"
 import { BaseInputSetterProps } from "@/page/App/components/PanelSetters/InputSetter/interface"
+import { applyInputSetterWrapperStyle } from "@/page/App/components/PanelSetters/InputSetter/style"
+import { getExecutionResult } from "@/redux/currentApp/executionTree/executionSelector"
+import { RootState } from "@/store"
+import { JSToString, stringToJS } from "@/utils/evaluateDynamicString/utils"
 
 function getPath(attrName?: string, widgetDisplayName?: string) {
   if (attrName && widgetDisplayName) {
@@ -79,8 +79,13 @@ export const TableMappedValueInputSetter: FC<BaseInputSetterProps> = (
     const output = fromCurrentRow
       ? getNeedComputedValue(value, dataPath, widgetDisplayName)
       : value
+    const name = attrName.substring(
+      parentAttrName ? parentAttrName?.length + 1 : 0,
+    )
     handleUpdateDsl(attrName, output)
-    handleUpdateDsl(`${parentAttrName}.fromCurrentRow`, fromCurrentRow)
+    handleUpdateDsl(`${parentAttrName}.fromCurrentRow`, {
+      [name]: fromCurrentRow,
+    })
   }
 
   return (

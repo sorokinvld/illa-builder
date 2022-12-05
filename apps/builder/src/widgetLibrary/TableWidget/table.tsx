@@ -1,15 +1,15 @@
+import { RowSelectionState, Updater } from "@tanstack/table-core"
+import { cloneDeep } from "lodash"
 import { FC, forwardRef, useCallback, useEffect, useMemo } from "react"
-import { Table, isObject, isNumber } from "@illa-design/react"
-import { Updater, RowSelectionState } from "@tanstack/table-core"
+import { useSelector } from "react-redux"
+import { Table, isNumber, isObject } from "@illa-design/react"
+import { getIllaMode } from "@/redux/config/configSelector"
 import {
   ColumnItemShape,
   TableWidgetProps,
   WrappedTableProps,
 } from "./interface"
-import { cloneDeep } from "lodash"
-import { getCellForType } from "./utils"
-import { useSelector } from "react-redux"
-import { getIllaMode } from "@/redux/config/configSelector"
+import { getCellForType, transTableColumnEvent } from "./utils"
 
 export const WrappedTable = forwardRef<HTMLInputElement, WrappedTableProps>(
   (props, ref) => {
@@ -139,6 +139,7 @@ export const TableWidget: FC<TableWidgetProps> = (props) => {
     handleUpdateGlobalData,
     handleDeleteGlobalData,
     handleOnClickMenuItem,
+    handleUpdateOriginalDSLMultiAttr,
     ...otherProps
   } = props
 
@@ -166,7 +167,7 @@ export const TableWidget: FC<TableWidgetProps> = (props) => {
   const columnsDef = useMemo(() => {
     const res: ColumnItemShape[] = []
     columns?.forEach((item, index) => {
-      const eventPath = `columns.${index}.events`
+      const eventPath = `rowEvents.${index}`
       const transItem = cloneDeep(item) as ColumnItemShape
       transItem["cell"] = getCellForType(
         transItem,
@@ -210,6 +211,23 @@ export const TableWidget: FC<TableWidgetProps> = (props) => {
     dataSource,
   ])
 
+  const rowEvents = useMemo(() => {
+    const res: Record<string, any> = {}
+    columns?.forEach((item, index) => {
+      const { events } = item as ColumnItemShape
+      if (events) {
+        res[index] = transTableColumnEvent(events, realDataSourceArray.length)
+      }
+    })
+    return res
+  }, [columns, realDataSourceArray?.length])
+
+  useEffect(() => {
+    handleUpdateOriginalDSLMultiAttr({
+      rowEvents,
+    })
+  }, [rowEvents])
+
   return (
     <WrappedTable
       {...otherProps}
@@ -228,6 +246,7 @@ export const TableWidget: FC<TableWidgetProps> = (props) => {
       multiRowSelection={multiRowSelection}
       handleUpdateGlobalData={handleUpdateGlobalData}
       handleDeleteGlobalData={handleDeleteGlobalData}
+      handleUpdateOriginalDSLMultiAttr={handleUpdateOriginalDSLMultiAttr}
       handleUpdateDsl={handleUpdateDsl}
     />
   )
