@@ -11,7 +11,6 @@ import {
   messageStyle,
   messageWrapperStyle,
 } from "./style"
-
 export const CanvasPanel: FC<CanvasPanelProps> = (props) => {
   const { ...otherProps } = props
 
@@ -22,6 +21,7 @@ export const CanvasPanel: FC<CanvasPanelProps> = (props) => {
   return (
     <div
       {...otherProps}
+      id="rootCanvas"
       css={applyScaleContainerStyle(100)}
       onClick={() => {
         FocusManager.switchFocus("canvas")

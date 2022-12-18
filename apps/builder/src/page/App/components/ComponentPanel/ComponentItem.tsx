@@ -19,10 +19,11 @@ import {
   itemContainerStyle,
   nameStyle,
 } from "./style"
+import { useDraggable } from "@dnd-kit/core"
 
 export const ComponentItem: FC<ComponentItemProps> = memo(
   (props: ComponentItemProps) => {
-    const { widgetName, icon, id, ...partialDragInfo } = props
+    const { widgetName, icon, id, uid, ...partialDragInfo } = props
 
     const illaMode = useSelector(getIllaMode)
 
@@ -61,9 +62,23 @@ export const ComponentItem: FC<ComponentItemProps> = memo(
       [illaMode],
     )
 
+    const { attributes, listeners, setNodeRef } = useDraggable({
+      id: `${widgetName}-${uid}`,
+      data: {
+        widgetName,
+        dragInfo: partialDragInfo,
+        currentColumnNumber: 64,
+        action: "ADD",
+      },
+    })
+
     return (
-      <div css={itemContainerStyle} ref={dragRef}>
-        <div css={dragPreviewStyle} ref={dragPreviewRef} />
+      <div
+        css={itemContainerStyle}
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+      >
         <span css={iconStyle}>{icon}</span>
         <span css={nameStyle}>{widgetName}</span>
       </div>

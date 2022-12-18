@@ -9,7 +9,7 @@ import {
 } from "./style"
 
 export const ComponentSession = memo((props: ComponentSessionProps) => {
-  const { title, widgetCardInfos } = props
+  const { title, widgetCardInfos, uid } = props
   const { t } = useTranslation()
 
   return widgetCardInfos.length > 0 ? (
@@ -17,7 +17,7 @@ export const ComponentSession = memo((props: ComponentSessionProps) => {
       <span css={sessionTitleStyle}>{t(title)}</span>
       <div css={componentListContainerStyle}>
         {widgetCardInfos.map((item) => (
-          <ComponentItem key={item.id} {...item} />
+          <ComponentItem key={item.id} {...item} uid={uid} />
         ))}
       </div>
     </div>

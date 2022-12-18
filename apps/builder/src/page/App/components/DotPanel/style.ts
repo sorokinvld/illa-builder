@@ -45,6 +45,26 @@ export const applyComponentCanvasStyle = (
   `
 }
 
+export const applyComponentCanvasSizeStyle = (
+  addHeight: number = 0,
+  minHeight?: number,
+) => {
+  const heightCss = minHeight
+    ? css`
+        height: ${addHeight}px;
+        min-height: ${minHeight}px;
+      `
+    : css`
+        min-height: 100vh;
+        height: ${addHeight}px;
+      `
+  return css`
+    width: 100%;
+    ${heightCss};
+    position: relative;
+  `
+}
+
 const normalCanvasBackgroundStyle = css`
   background: unset;
 `
@@ -439,4 +459,9 @@ export const footerHeightTipsStyle = css`
   ${basicTipsStyle};
   top: -20px;
   left: calc(50% - 18px);
+`
+
+export const dropWrapperStyle = css`
+  width: 100%;
+  height: 100%;
 `

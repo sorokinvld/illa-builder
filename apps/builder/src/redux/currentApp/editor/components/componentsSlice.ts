@@ -13,6 +13,8 @@ import {
   sortComponentNodeChildrenReducer,
   updateComponentContainerReducer,
   updateComponentDisplayNameReducer,
+  updateComponentNodeParentNodeByDragReducer,
+  updateComponentNodePositionByDragReducer,
   updateComponentPropsReducer,
   updateComponentReducer,
   updateComponentReflowReducer,
@@ -53,6 +55,8 @@ const componentsSlice = createSlice({
     addSectionViewReducer,
     deleteSectionViewReducer,
     updateSectionViewPropsReducer,
+    updateComponentNodePositionByDragReducer,
+    updateComponentNodeParentNodeByDragReducer,
   },
 })
 

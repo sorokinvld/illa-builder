@@ -44,6 +44,9 @@ import {
   rightPanelStyle,
   waringIconStyle,
 } from "./style"
+import { ILLADndContext } from "@/page/App/context/ILLADndContext"
+import { createPortal } from "react-dom"
+import { DragOverlay } from "@dnd-kit/core"
 
 export const Editor: FC = () => {
   const dispatch = useDispatch()
@@ -126,33 +129,35 @@ export const Editor: FC = () => {
   )
 
   return (
-    <div css={editorContainerStyle}>
-      {loadingState && <AppLoading />}
-      {!loadingState && (
-        <Shortcut>
-          <PageNavBar css={navbarStyle} />
-          <div css={contentStyle}>
-            {showLeftPanel && <DataWorkspace css={leftPanelStyle} />}
-            <div css={middlePanelStyle}>
-              <CanvasPanel css={centerPanelStyle} />
-              {showBottomPanel && !showDebugger ? (
-                <ActionEditor css={bottomPanelStyle} />
-              ) : null}
-              {showDebugger && <Debugger css={bottomPanelStyle} />}
+    <ILLADndContext>
+      <div css={editorContainerStyle}>
+        {loadingState && <AppLoading />}
+        {!loadingState && (
+          <Shortcut>
+            <PageNavBar css={navbarStyle} />
+            <div css={contentStyle}>
+              {showLeftPanel && <DataWorkspace css={leftPanelStyle} />}
+              <div css={middlePanelStyle}>
+                <CanvasPanel css={centerPanelStyle} />
+                {showBottomPanel && !showDebugger ? (
+                  <ActionEditor css={bottomPanelStyle} />
+                ) : null}
+                {showDebugger && <Debugger css={bottomPanelStyle} />}
+              </div>
+              {showRightPanel && <ComponentsManager css={rightPanelStyle} />}
             </div>
-            {showRightPanel && <ComponentsManager css={rightPanelStyle} />}
-          </div>
-          {!isOnline && (
-            <div css={modalStyle} onMouseDown={handleMouseDownOnModal}>
-              <motion.div css={messageWrapperStyle} animate={controls}>
-                <WarningCircleIcon css={waringIconStyle} />
-                {t("not_online_tips")}
-              </motion.div>
-            </div>
-          )}
-        </Shortcut>
-      )}
-    </div>
+            {!isOnline && (
+              <div css={modalStyle} onMouseDown={handleMouseDownOnModal}>
+                <motion.div css={messageWrapperStyle} animate={controls}>
+                  <WarningCircleIcon css={waringIconStyle} />
+                  {t("not_online_tips")}
+                </motion.div>
+              </div>
+            )}
+          </Shortcut>
+        )}
+      </div>
+    </ILLADndContext>
   )
 }
 

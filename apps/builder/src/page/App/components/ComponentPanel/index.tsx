@@ -42,7 +42,11 @@ export const ComponentPanel: FC<ComponentPanelProps> = (props) => {
       <div css={sessionListContainerStyle}>
         {searchRes && searchRes.length ? (
           searchRes.map((session) => (
-            <ComponentSession key={"session-" + session.title} {...session} />
+            <ComponentSession
+              key={"session-" + session.title}
+              {...session}
+              uid={"session-" + session.title}
+            />
           ))
         ) : (
           <EmptySearchResult />

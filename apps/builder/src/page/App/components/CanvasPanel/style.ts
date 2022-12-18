@@ -3,8 +3,6 @@ import { globalColor, illaPrefix } from "@illa-design/react"
 
 export function applyScaleContainerStyle(scale: number): SerializedStyles {
   return css`
-    transform: scale(${scale / 100});
-    transform-origin: 50% 0;
     background: ${globalColor(`--${illaPrefix}-white-01`)};
     box-sizing: border-box;
     min-width: 148px;

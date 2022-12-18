@@ -54,6 +54,7 @@ import { TransformWidgetWrapper } from "@/widgetLibrary/PublicSector/TransformWi
 import { TransformWidgetWrapperWithJson } from "@/widgetLibrary/PublicSector/TransformWidgetWrapper/renderWithJSON"
 import { RESIZE_DIRECTION } from "@/widgetLibrary/interface"
 import { widgetBuilder } from "@/widgetLibrary/widgetBuilder"
+import { useDraggable } from "@dnd-kit/core"
 
 const { Item } = DropList
 
@@ -78,6 +79,9 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
     const executionResult = getExecutionResult(rootState)
     return get(executionResult, componentNode.displayName, null)
   })
+  const allChildrenNodes = useSelector<RootState, ComponentNode[] | null>(
+    getFlattenArrayComponentNodes,
+  )
 
   const displayNameInMoveBar = useMemo(() => {
     if (componentNode.type === "CONTAINER_WIDGET" && realProps) {
@@ -192,7 +196,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
     [componentNode.displayName, dispatch, illaMode, selectedComponents],
   )
 
-  const handleOnResizeStop = useCallback(
+  const handleOnResizeStop: RndResizeCallback = useCallback(
     (e, dir, ref, delta, position) => {
       const { width, height } = delta
       const finalWidth = Math.round((w + width) / unitW)
@@ -239,41 +243,51 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
     60,
   )
 
-  const [{ isDragging }, dragRef, dragPreviewRef] = useDrag<
-    DragInfo,
-    DropResultInfo,
-    DragCollectedInfo
-  >(
-    () => ({
-      type: "components",
-      canDrag: () => {
-        return illaMode === "edit"
-      },
-      end: (draggedItem, monitor) => {
-        const dropResultInfo = monitor.getDropResult()
-        endDrag(draggedItem.item, dropResultInfo?.isDropOnCanvas ?? false)
-      },
-      item: () => {
-        const rootState = store.getState()
-        const allComponentNodes = getFlattenArrayComponentNodes(rootState)
-        const childrenNodes = allComponentNodes
-          ? cloneDeep(allComponentNodes)
-          : []
-        startDrag(componentNode)
-        return {
-          item: componentNode,
-          childrenNodes,
-          currentColumnNumber: columnsNumber,
-        }
-      },
-      collect: (monitor) => {
-        return {
-          isDragging: monitor.isDragging(),
-        }
-      },
-    }),
-    [illaMode, componentNode],
-  )
+  const { isDragging, attributes, listeners, setNodeRef } = useDraggable({
+    id: componentNode.displayName,
+    data: {
+      item: componentNode,
+      blockColumns: columnsNumber,
+      action: "UPDATE",
+      childrenNodes: allChildrenNodes,
+    },
+  })
+
+  // const [{ isDragging }, dragRef, dragPreviewRef] = useDrag<
+  //   DragInfo,
+  //   DropResultInfo,
+  //   DragCollectedInfo
+  // >(
+  //   () => ({
+  //     type: "components",
+  //     canDrag: () => {
+  //       return illaMode === "edit"
+  //     },
+  //     end: (draggedItem, monitor) => {
+  //       const dropResultInfo = monitor.getDropResult()
+  //       endDrag(draggedItem.item, dropResultInfo?.isDropOnCanvas ?? false)
+  //     },
+  //     item: () => {
+  //       const rootState = store.getState()
+  // const allComponentNodes = getFlattenArrayComponentNodes(rootState)
+  //       const childrenNodes = allComponentNodes
+  //         ? cloneDeep(allComponentNodes)
+  //         : []
+  //       startDrag(componentNode)
+  //       return {
+  //         item: componentNode,
+  //         childrenNodes,
+  //         currentColumnNumber: columnsNumber,
+  //       }
+  //     },
+  //     collect: (monitor) => {
+  //       return {
+  //         isDragging: monitor.isDragging(),
+  //       }
+  //     },
+  //   }),
+  //   [illaMode, componentNode],
+  // )
 
   const resizeHandler = useMemo(() => {
     switch (resizeDirection) {
@@ -508,7 +522,9 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
           )}
           onClick={handleOnSelection}
           onContextMenu={handleContextMenu}
-          ref={dragRef}
+          {...listeners}
+          {...attributes}
+          ref={setNodeRef}
         >
           <MoveBar
             isError={hasError}
@@ -535,7 +551,6 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
           )}
         </div>
       </Dropdown>
-      <div css={dragPreviewStyle} ref={dragPreviewRef} />
     </Rnd>
   )
 })

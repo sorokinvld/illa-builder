@@ -1,4 +1,5 @@
 import { RootState } from "@/store"
+import { createSelector } from "@reduxjs/toolkit"
 
 export const isOpenLeftPanel = (state: RootState) => {
   return state.config.openLeftPanel && state.config.mode === "edit"
@@ -23,6 +24,10 @@ export const getPreviewEdgeWidth = (state: RootState) => {
 export const getIllaMode = (state: RootState) => {
   return state.config.mode
 }
+
+export const isEditMode = createSelector([getIllaMode], (mode) => {
+  return mode === "edit"
+})
 
 export const isShowDot = (state: RootState) => {
   return state.config.showDot && state.config.mode === "edit"

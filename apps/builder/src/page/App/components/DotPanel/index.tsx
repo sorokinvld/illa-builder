@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import React, { FC, useMemo } from "react"
 import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import { getIllaMode } from "@/redux/config/configSelector"
@@ -9,7 +9,6 @@ import {
 } from "@/redux/currentApp/editor/components/componentsState"
 import { getRootNodeExecutionResult } from "@/redux/currentApp/executionTree/executionSelector"
 import { RenderPage } from "./renderPage"
-
 export const DotPanel: FC = () => {
   const canvasTree = useSelector(getCanvas) as RootComponentNode
   const rootExecutionProps = useSelector(getRootNodeExecutionResult)

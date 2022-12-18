@@ -9,10 +9,14 @@ export interface ComponentPanelProps extends HTMLAttributes<HTMLDivElement> {
 export type ComponentSessionProps = {
   title: any
   widgetCardInfos: WidgetCardInfo[]
+
+  uid: string
 }
 
 export type NewTypeMapComponent = {
   [key in SessionType]: WidgetCardInfo[]
 }
 
-export interface ComponentItemProps extends WidgetCardInfo {}
+export interface ComponentItemProps extends WidgetCardInfo {
+  uid: string
+}

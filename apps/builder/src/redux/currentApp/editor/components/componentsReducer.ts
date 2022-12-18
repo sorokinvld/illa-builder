@@ -573,3 +573,47 @@ export const deleteSectionViewReducer: CaseReducer<
   if (sectionViewConfigsIndex === -1) return
   parentNode.props.sectionViewConfigs.splice(sectionViewConfigsIndex, 1)
 }
+
+export const updateComponentNodePositionByDragReducer: CaseReducer<
+  ComponentsState,
+  PayloadAction<ComponentNode>
+> = (state, action) => {
+  const { displayName, x, y, unitH, unitW } = action.payload
+  const currentNode = searchDsl(state, displayName)
+  if (!currentNode) return
+  currentNode.x = x
+  currentNode.y = y
+  currentNode.unitW = unitW
+  currentNode.unitH = unitH
+}
+
+export const updateComponentNodeParentNodeByDragReducer: CaseReducer<
+  ComponentsState,
+  PayloadAction<ComponentNode>
+> = (state, action) => {
+  const { displayName, parentNode, x, y, unitH, unitW, w, h } = action.payload
+  const currentNode = searchDsl(state, displayName)
+  const newCurrentNode = cloneDeep(currentNode)
+  if (!currentNode || !newCurrentNode) return
+  const oldParentNode = searchDsl(state, currentNode.parentNode)
+  if (!oldParentNode) return
+  const oldIndexOf = oldParentNode.childrenNode.findIndex(
+    (node) => node.displayName === displayName,
+  )
+  if (oldIndexOf === -1) return
+  oldParentNode.childrenNode.splice(oldIndexOf, 1)
+  const newParentNode = searchDsl(state, parentNode)
+  if (!newParentNode) return
+  if (!Array.isArray(newParentNode.childrenNode)) {
+    newParentNode.childrenNode = []
+  }
+  newCurrentNode.parentNode = parentNode
+  newCurrentNode.x = x
+  newCurrentNode.y = y
+  newCurrentNode.w = w
+  newCurrentNode.h = h
+  newCurrentNode.unitH = unitH
+  newCurrentNode.unitW = unitW
+
+  newParentNode.childrenNode.push(newCurrentNode)
+}
