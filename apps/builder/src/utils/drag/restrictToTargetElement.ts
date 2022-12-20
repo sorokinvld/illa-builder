@@ -1,7 +1,6 @@
 import type { Modifier, ClientRect } from "@dnd-kit/core"
 import type { Transform } from "@dnd-kit/utilities"
 import { getActiveData, getOverData, getOverRect } from "@/utils/drag/utils"
-import { getEventCoordinates } from "@dnd-kit/utilities"
 
 export function restrictToBoundingRect(
   transform: Transform,
@@ -53,37 +52,44 @@ export const snapToGrid: Modifier = ({
   active,
   activatorEvent,
 }) => {
-  const rootCanvas = document.querySelector("#rootCanvas")
-  const rootCanvasRect = rootCanvas?.getBoundingClientRect()
   const overData = getOverData(over)
   const overRect = getOverRect(over)
   const activeData = getActiveData(active)
-
-  console.log("activeData", activeData)
   if (
     !overData ||
     !draggingNodeRect ||
-    !rootCanvasRect ||
     !overRect ||
     !activeData ||
     !activatorEvent
   ) {
     return transform
   }
-  const activatorCoordinates = getEventCoordinates(activatorEvent)
+
   const { unitWidth, unitHeight } = overData
-  const restrictTransform = restrictToBoundingRect(
-    transform,
-    draggingNodeRect,
-    overRect,
-  )
+  // const realDraggingNodeRect = getDraggingRect(
+  //   activeData.item,
+  //   {
+  //     x: transform.x,
+  //     y: transform.y,
+  //   },
+  //   over,
+  // )
+  // console.log("realDraggingNodeRect", realDraggingNodeRect)
+  // const restrictTransform = restrictToBoundingRectByItemRect(
+  //   transform,
+  //   realDraggingNodeRect,
+  //   overRect,
+  // )
   let ceilTransform = {
-    ...restrictTransform,
-    x: Math.ceil(restrictTransform.x / unitWidth) * unitWidth,
-    y: Math.ceil(restrictTransform.y / unitHeight) * unitHeight,
+    ...transform,
+    x: Math.ceil(transform.x / unitWidth) * unitWidth,
+    y: Math.ceil(transform.y / unitHeight) * unitHeight,
   }
 
-  console.log("ceilTransform", ceilTransform)
+  console.log("transform.x", transform)
+  console.log("draggingNodeRect.left", draggingNodeRect.left)
+  console.log("left", draggingNodeRect.left + ceilTransform.x)
+  console.log("RectLeft", overRect.left)
 
   return ceilTransform
   // if (activeData.action === "ADD" && activatorCoordinates) {

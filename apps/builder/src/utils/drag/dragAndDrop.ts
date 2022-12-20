@@ -1,14 +1,9 @@
 import { ComponentNode } from "@/redux/currentApp/editor/components/componentsState"
 import { Translate } from "@dnd-kit/core/dist/types/coordinates"
 import { Over } from "@dnd-kit/core/dist/store"
-import {
-  checkComponentNode,
-  getOverData,
-  getOverId,
-  getOverRect,
-} from "@/utils/drag/utils"
+import { getOverData, getOverRect } from "@/utils/drag/utils"
 
-export const dragAndDropWhenUpdate = (
+export const dragAndDropRealPosition = (
   item: ComponentNode,
   delta: Translate,
   over: Over | null,
@@ -18,70 +13,50 @@ export const dragAndDropWhenUpdate = (
     return item
   }
 
-  const { unitWidth, unitHeight, blockColumns } = overData
-  const newX = Math.ceil((item.x * unitWidth + delta.x) / unitWidth)
-  const newY = Math.ceil((item.y * unitHeight + delta.y) / unitHeight)
-
-  return checkComponentNode(
-    {
-      ...item,
-      x: newX,
-      y: newY,
-      unitW: unitWidth,
-      unitH: unitHeight,
-    },
-    blockColumns,
-  )
-}
-
-export const dragAndDropWhenUpdateContainer = (
-  item: ComponentNode,
-  delta: Translate,
-  over: Over | null,
-): ComponentNode => {
-  const overData = getOverData(over)
-  const overRect = getOverRect(over)
-  const overId = getOverId(over)
-  if (!overData || !overRect || !overId) {
-    return item
-  }
   const { unitWidth, unitHeight } = overData
-  const newX = Math.ceil((item.x + delta.x - overRect.left) / unitWidth)
-  const newY = Math.ceil(
-    (item.y + delta.y - overRect.top - item.h * unitHeight) / unitHeight,
-  )
-
+  const newX = (item.x * unitWidth + delta.x) / unitWidth
+  const newY = (item.y * unitHeight + delta.y) / unitHeight
   return {
     ...item,
     x: newX,
     y: newY,
     unitW: unitWidth,
     unitH: unitHeight,
-    parentNode: overId,
   }
 }
 
-export const dragAndDropWhenAdd = (
+export const getDraggingRect = (
   item: ComponentNode,
   delta: Translate,
   over: Over | null,
 ) => {
+  // const dragItem = dragAndDropRealPosition(item, delta, over)
   const overData = getOverData(over)
   const overRect = getOverRect(over)
-  const overId = getOverId(over)
-  if (!overData || !overRect || !overId) {
-    return item
+  if (!overData || !overRect) {
+    return {
+      left: item.x,
+      top: item.y,
+      right: item.x + item.w,
+      bottom: item.y + item.h,
+      width: item.w,
+      height: item.h,
+    }
   }
-  const { unitWidth, unitHeight } = overData
-  const newX = Math.ceil((item.x + delta.x - overRect.left) / unitWidth)
-  const newY = Math.ceil((item.y + delta.y - overRect.top) / unitHeight)
-
   return {
-    ...item,
-    x: newX,
-    y: newY,
-    unitW: unitWidth,
-    unitH: unitHeight,
-    parentNode: overId,
+    left: item.x * overData.unitWidth + delta.x + overRect.left,
+    top: item.y * overData.unitHeight + delta.y + overRect.top,
+    right:
+      item.x * overData.unitWidth +
+      delta.x +
+      overRect.left +
+      item.w * overData.unitWidth,
+    bottom:
+      item.y * overData.unitHeight +
+      delta.y +
+      overRect.top +
+      item.h * overData.unitHeight,
+    width: item.w * overData.unitWidth,
+    height: item.h * overData.unitHeight,
   }
 }

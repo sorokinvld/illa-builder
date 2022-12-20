@@ -1,5 +1,5 @@
 import { FC, ReactNode, useCallback, useRef, useState } from "react"
-import { restrictToWindowEdges } from "@dnd-kit/modifiers"
+import { restrictToWindowEdges, snapCenterToCursor } from "@dnd-kit/modifiers"
 import {
   MouseSensor,
   useSensor,
@@ -9,6 +9,7 @@ import {
   DragEndEvent,
   DragOverEvent,
   DragMoveEvent,
+  pointerWithin,
 } from "@dnd-kit/core"
 import { createPortal } from "react-dom"
 import {
@@ -23,11 +24,7 @@ import {
   TransparentBlock,
 } from "@/page/App/components/ScaleSquare/components/commanPreview"
 import { componentsActions } from "@/redux/currentApp/editor/components/componentsSlice"
-import {
-  dragAndDropWhenAdd,
-  dragAndDropWhenUpdate,
-  dragAndDropWhenUpdateContainer,
-} from "@/utils/drag/dragAndDrop"
+import { getDraggingRect } from "@/utils/drag/dragAndDrop"
 import { generateComponentNode } from "@/utils/generators/generateComponentNode"
 import { getReflowResult } from "@/page/App/components/DotPanel/calc"
 import { DebounceUpdateReflow } from "@/page/App/components/DotPanel/interface"
@@ -37,11 +34,13 @@ import store from "@/store"
 import { getFlattenArrayComponentNodes } from "@/redux/currentApp/editor/components/componentsSelector"
 import {
   getActiveData,
-  getActiveDataRect,
+  getActiveRect,
   getOverData,
   getOverId,
   getOverRect,
+  getRealComponentNodePosition,
   isOverBoundingRect,
+  isOverBoundingRectByComponentNode,
 } from "@/utils/drag/utils"
 import { getEventCoordinates } from "@dnd-kit/utilities"
 
@@ -53,7 +52,7 @@ export const ILLADndContext: FC<ILLADndContextProps> = (props) => {
   const { children } = props
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
-      distance: 10,
+      distance: 5,
     },
   })
 
@@ -63,12 +62,9 @@ export const ILLADndContext: FC<ILLADndContextProps> = (props) => {
     h: 0,
   })
   const [canDrop, setCanDrop] = useState(true)
+  const originContainerRect = useRef()
 
   const dispatch = useDispatch()
-  const [realTop, setRealTop] = useState(0)
-  const [realLeft, setRealLeft] = useState(0)
-  const [lunchTop, setLunchTop] = useState(0)
-  const [lunchLeft, setLunchLeft] = useState(0)
 
   const sensors = useSensors(mouseSensor)
   const allChildrenNodesRef = useRef<ComponentNode[]>([])
@@ -118,73 +114,57 @@ export const ILLADndContext: FC<ILLADndContextProps> = (props) => {
 
   const onDragEnd = useCallback(
     (e: DragEndEvent) => {
+      console.log("e", e)
       dispatch(configActions.updateShowDot(false))
       isActive && setIsActive(false)
-      const { over, activatorEvent } = e
-      if (
-        e.active.data.current &&
-        e.active.data.current.action === "UPDATE" &&
-        over &&
-        over.data.current
-      ) {
+      const { over, activatorEvent, active, delta } = e
+      const activeData = getActiveData(active)
+      const overData = getOverData(over)
+      if (activeData && activeData.action === "UPDATE" && overData) {
         const {
           unitWidth,
           unitHeight,
           blockColumns: currentBlockColumns,
-        } = over.data.current
-        const { item, blockColumns: originBlockColumns } = e.active.data.current
-
+        } = overData
+        const { item, blockColumns: originBlockColumns } = activeData
+        const realItem = getRealComponentNodePosition(
+          item,
+          delta,
+          over,
+          active,
+          activatorEvent as MouseEvent,
+        )
         if (item.parentNode === e.over?.id) {
           dispatch(
             componentsActions.updateComponentNodePositionByDragReducer(
-              dragAndDropWhenUpdate(item, e.delta, e.over),
+              realItem,
             ),
           )
         } else {
-          const newItem = {
-            ...item,
-            // @ts-ignore
-            x: e.activatorEvent.x,
-            // @ts-ignore
-            y: e.activatorEvent.y,
-          }
           const scale = currentBlockColumns / originBlockColumns
 
-          const finalNode = dragAndDropWhenUpdateContainer(
-            newItem,
-            e.delta,
-            e.over,
-          )
-          finalNode.w = Math.round(finalNode.w * scale)
+          realItem.w = Math.round(realItem.w * scale)
           dispatch(
             componentsActions.updateComponentNodeParentNodeByDragReducer(
-              finalNode,
+              realItem,
             ),
           )
         }
-      } else if (
-        e.active.data.current &&
-        e.active.data.current.action === "ADD"
-      ) {
-        const { dragInfo, widgetName } = e.active.data.current
+      } else if (activeData && activeData.action === "ADD") {
+        const { dragInfo, widgetName } = activeData
         const item = generateComponentNode({
           widgetName,
           ...dragInfo,
         })
-        const activeShape = getActiveDataRect(e.active)
+        const realItem = getRealComponentNodePosition(
+          item,
+          delta,
+          over,
+          active,
+          activatorEvent as MouseEvent,
+        )
 
-        // @ts-ignore
-        item.x = activeShape.left
-        // @ts-ignore
-        item.y = activeShape.top
-        console.log("activeShape", item)
-        const activatorCoordinates = getEventCoordinates(activatorEvent)
-        if (activatorCoordinates) {
-          const offSetX = activatorCoordinates.x - dragInfo.w * 0.5
-          const newItem = dragAndDropWhenAdd(item, e.delta, e.over)
-          // const item = e.active.data.current.item
-          dispatch(componentsActions.addComponentReducer([newItem]))
-        }
+        dispatch(componentsActions.addComponentReducer([realItem]))
       }
     },
     [dispatch, isActive],
@@ -204,22 +184,40 @@ export const ILLADndContext: FC<ILLADndContextProps> = (props) => {
 
   const onDragMove = useCallback(
     (e: DragMoveEvent) => {
-      const { active, over, delta } = e
+      console.log("dragMoveEvnet", e)
+      const { active, over, delta, activatorEvent } = e
       const activeData = getActiveData(active)
       const overRect = getOverRect(over)
       const overData = getOverData(over)
-      const activeRect = getActiveDataRect(active)
+      const activeRect = getActiveRect(active)
       const overID = getOverId(over)
-      if (activeData && overRect && overData && activeRect) {
-        const isCanDrop = isOverBoundingRect(delta, activeRect, overRect)
+      if (
+        activeData &&
+        overRect &&
+        overData &&
+        activeRect &&
+        activeData.action === "UPDATE"
+      ) {
+        console.log("over", over)
+        const itemShape = getDraggingRect(activeData.item, delta, over)
+        console.log("itemShape", itemShape)
+        const isCanDrop = isOverBoundingRectByComponentNode(itemShape, overRect)
+        // const isCanDrop = isOverBoundingRect(delta, activeRect, overRect)
         setCanDrop(isCanDrop)
       }
 
       if (activeData && activeData.action === "UPDATE" && overID) {
         const { item } = activeData
-        const newItem = dragAndDropWhenUpdate(item, e.delta, e.over)
+        const realItem = getRealComponentNodePosition(
+          item,
+          delta,
+          over,
+          active,
+          activatorEvent as MouseEvent,
+        )
+
         const { finalState, effectResultMap } = getReflowResult(
-          newItem,
+          realItem,
           allChildrenNodesRef.current,
         )
         const updateSlice = [
@@ -236,15 +234,16 @@ export const ILLADndContext: FC<ILLADndContextProps> = (props) => {
           widgetName,
           ...dragInfo,
         })
-        // @ts-ignore
-        item.x = e.activatorEvent.x
-        // @ts-ignore
-        item.y = e.activatorEvent.y
+        const realItem = getRealComponentNodePosition(
+          item,
+          delta,
+          over,
+          active,
+          activatorEvent as MouseEvent,
+        )
 
-        const newItem = dragAndDropWhenAdd(item, e.delta, e.over)
-        console.log("newItem", newItem)
         const { finalState, effectResultMap } = getReflowResult(
-          newItem,
+          realItem,
           allChildrenNodesRef.current,
         )
         const updateSlice = [
@@ -266,33 +265,33 @@ export const ILLADndContext: FC<ILLADndContextProps> = (props) => {
       onDragEnd={onDragEnd}
       onDragMove={onDragMove}
       sensors={sensors}
+      collisionDetection={pointerWithin}
     >
       {children}
       {createPortal(
-        isActive && (
-          <DragOverlay>
-            <DashedLine
-              width={previewShape.w}
-              height={previewShape.h}
-              left={lunchLeft}
-              top={lunchTop}
-            />
-          </DragOverlay>
-        ),
+        <DragOverlay
+          // modifiers={[snapCenterToCursor, snapToGrid]}
+          dropAnimation={null}
+        >
+          {isActive && (
+            <DashedLine width={previewShape.w} height={previewShape.h} />
+          )}
+        </DragOverlay>,
         document.body,
       )}
       {createPortal(
-        isActive && (
-          <DragOverlay>
+        <DragOverlay
+          dropAnimation={null}
+          // modifiers={[snapCenterToCursor]}
+        >
+          {isActive && (
             <TransparentBlock
               width={previewShape.w}
               height={previewShape.h}
               canDrop={canDrop}
-              left={realLeft}
-              top={realTop}
             />
-          </DragOverlay>
-        ),
+          )}
+        </DragOverlay>,
         document.body,
       )}
     </DndContext>

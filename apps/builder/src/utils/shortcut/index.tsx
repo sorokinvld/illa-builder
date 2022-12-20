@@ -269,10 +269,14 @@ export const Shortcut: FC<{ children: ReactNode }> = ({ children }) => {
     [currentSelectedComponent, currentSelectedAction],
   )
 
+  useHotkeys("meta", (keyboardEvent) => {
+    console.log("???????")
+  })
+
   useHotkeys(
     "*",
-    (keyboardEvent) => {
-      if (hotkeys.ctrl || hotkeys.command) {
+    (keyboardEvent, hotkeysEvent) => {
+      if (keyboardEvent.key === "Meta" || keyboardEvent.key === "ctrl") {
         if (keyboardEvent.type === "keydown") {
           dispatch(configActions.updateShowDot(true))
         } else if (keyboardEvent.type === "keyup") {

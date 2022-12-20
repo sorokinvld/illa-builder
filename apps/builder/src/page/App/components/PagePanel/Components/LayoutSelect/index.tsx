@@ -51,6 +51,7 @@ export const LayoutOptionItem: FC<LayoutOptionItemProps> = (props) => {
     if (selectedValue === value || !currentPageName) return
     modal.show({
       w: "496px",
+      title: " ",
       children: t("editor.page.model_tips.change_layout_message"),
       cancelText: t("editor.page.model_tips.cancel_button"),
       okText: t("editor.page.model_tips.ok_button"),
