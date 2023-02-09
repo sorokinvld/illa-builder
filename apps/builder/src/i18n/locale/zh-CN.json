@@ -1,5 +1,4 @@
 {
-  "welcome_header": "Hello world!",
   "Logout": "退出登录",
   "Setting": "设置",
   "apps": "项目",
@@ -162,6 +161,45 @@
         "error": {
           "max_file": "文件大小不能超过5M。"
         },
+        "firebase": {
+          "action_type": "Action Type",
+          "collection": "集合",
+          "database_ref": "Database ref",
+          "document_id": "文档ID",
+          "email": "邮箱",
+          "end_at": "End At",
+          "len_of_list": "列表长度",
+          "limit": "Limit",
+          "next_page_token": "下一页token",
+          "object_to_set": "Object to set",
+          "order_by": "Order by",
+          "ordering_direction": "Ordering direction",
+          "parent_document_id": "父文档ID",
+          "phone_number": "手机号码",
+          "placeholder": {
+            "asc": "asc",
+            "document_value": "{{ { \"stringField\":\"value\", \"numberField\": 42, \"docRef\": { $ref: \"collection/8FB4EF\" } } }}",
+            "input_collection": "输入一个集合",
+            "key": "key",
+            "select_an_action": "Select an action",
+            "select_collection": "选择一个集合",
+            "value": "value"
+          },
+          "service_type": "Service Type",
+          "start_at": "Start At",
+          "tips": {
+            "document_id": "空白时将自动生成ID",
+            "parent_document_id_tips": "为空时选择最外层目录"
+          },
+          "uid": "UID",
+          "use_a_dropdown": "Use a dropdown",
+          "use_end_at": "Use endAt",
+          "use_raw_id": "Use raw id",
+          "use_start_at": "Use startAt",
+          "user_object": "用户对象",
+          "value": "值",
+          "where": "where"
+        },
         "label": {
           "event_handler": "事件处理器",
           "failure": "失败",
@@ -215,7 +253,7 @@
           "object_key_list": "对象键值列表",
           "placeholder": {
             "data_list": "{{[\"e1xydGYxXGFuc2lcYW5zaWNwZzkzNlxjb2NvYXJ0ZjI2MzgKXGNvY29hdGV4dHNjYWxpbmcwXGNvY29hcGxhdGZvcm0we1xmb250dGJ\nsXGYwXGZzd2lzc1xmY2hhcnNldDAgSGVsdmV0aWNhO30Ke1xjb2xvcnRibDtccmVkMjU1XGdyZWVuMjU1XGJsdWUyNTU7fQp7XCpcZXhw\nYW5kZWRjb2xvcnRibDs7\", \"fQpccGFwZXJ3MTE5MDBccGFwZXJoMTY4NDBcbWFyZ2wxNDQwXG1hcmdyMTQ0MFx2aWV3dzExNTIwXHZpZXdoODQw\nMFx2aWV3a2luZDAKXHBhcmRcdHg1NjZcdHgxMTMzXHR4MTcwMFx0eDIyNjdcdHgy\"]}}",
-            "object_key_list": "{{[\"myDir\/file1.txt\", \"myDir\/file2.txt\"]}}",
+            "object_key_list": "{{[\"myDir/file1.txt\", \"myDir/file2.txt\"]}}",
             "object_name": "export.csv",
             "object_name_list": "{{[\"export.csv\",\"export1.csv\"]}}"
           },
@@ -251,6 +289,47 @@
         },
         "tips": {
           "transformer": "启用Transformer将查询结果转换为不同的格式"
+        },
+        "graphql": {
+          "query": "Query",
+          "variables": "Variables",
+          "headers": "Headers",
+          "placeholder": {
+            "query": "# Use $ to add a variable into your query (e.g. $category ) \nquery ($owner: String!, $name: String!){\n  repository(owner: $owner, name: $name) \n}"
+          }
+        },
+        "hugging_face": {
+          "mode_id": "Model ID",
+          "placeholder": {
+            "mode_id": "bert-base-uncased",
+            "text": "The answer to the universe is [MASK].",
+            "json": "{ \r\n\"past_user_inputs\": [\"Which movie is the best ?\"], \r\n\"generated_responses\": [\"It's Die Hard for sure.\"], \r\n\"text\": \"Can you explain why ?\" \r\n}",
+            "binary": "'@cats.jpg' \\",
+            "use_cache": "Boolean，为空时默认true",
+            "min_length": "整数，用于定义输出摘要的最小标记长度",
+            "top_k": "整数，用于定义在创建新文本的示例操作中的顶级标记。",
+            "top_p": "浮点数，用于定义在文本生成示例操作中的标记。",
+            "temperature": "Float(0.0-100.0)，为空时默认1.0",
+            "repetition_penalty": "Float (0.0-100.0)",
+            "max_time": "Float (0.0-120.0) ，定义查询应该花费的最大时间量（以秒为单位）"
+          },
+          "tips": {
+            "mode_id": "Go to the <0>Model Hub</0> and select the model you want to use.",
+            "use_detail_parameters": "<0>Click here</0> to learn more about the detail parameters",
+            "temperature": "1表示定期抽样，0表示总是取最高分，100.0越来越接近均匀概率。",
+            "repetition_penalty": "The more a token is used within generation the more it is penalized to not be picked in successive generation passes."
+          },
+          "parameter": "Parameter",
+          "use_detail_parameters": "Use detail parameters",
+          "use_cache": "Use cache",
+          "wait_for_model": "Wait for model",
+          "min_length": "Min length",
+          "max_length": "Max length",
+          "top_k": "Top k",
+          "top_p": "Top p",
+          "temperature": "Temperature",
+          "repetition_penalty": "Repetition penalty",
+          "max_time": "Max time"
         }
       },
       "resource": {
@@ -258,6 +337,9 @@
           "coming_soon": "即将更新"
         },
         "db": {
+          "invalid_private": {
+            "key": "私钥无效 "
+          },
           "label": {
             "ca_certificate": "服务端证书",
             "client_certificate": "客户端证书",
@@ -268,8 +350,10 @@
             "connection_string": "连接地址",
             "database": "数据库名称",
             "database_index": "数据库索引",
+            "firebase_database_url": "Firebase数据库URL",
+            "firebase_project_id": "Firebase项目ID",
             "hostname": "主机",
-            "hostname_port": "主机\/端口",
+            "hostname_port": "主机/端口",
             "hosturl": "主机URL",
             "mongodb_connection_dns_seed_list": "DNS seed list connection",
             "mongodb_connection_standard": "Standard Connection",
@@ -278,33 +362,50 @@
             "name": "名称",
             "port": "端口",
             "private_key": "私钥",
+            "private_key_hover": "与具有Firebase权限的服务账户相关的私钥。",
             "ssl_options": "SSL 选项",
-            "username_password": "用户名\/密码"
+            "username_password": "用户名/密码",
+            "self_signed_certificate": "使用自签名证书",
+            "disable_introspection": "Disable Introspection",
+            "value": "Value",
+            "add_to": "Add to",
+            "header_prefix": "Header prefix",
+            "key": "Key",
+            "introspection": "Introspection",
+            "bear_token": "Token"
           },
           "placeholder": {
             "certificate": "-----BEGIN CERTIFICATE-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END CERTIFICATE-----",
             "database": "acme_production",
             "database_index": "默认 0",
             "hostname": "主机名",
-            "hosturl": "例如 https:\/\/example.com",
+            "hosturl": "例如 https://example.com",
             "mongo_certificate": "-----BEGIN RSA PRIVATE KEY-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END RSA PRIVATE KEY-----\n-----BEGIN CERTIFICATE-----\nMIIEMDCCApigAwIBAgIDI2GWMA0GCSqGSIb3DQEBDAUAMDoxODA2BgNVBAMML2Fm\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\nDTE5MDQwODAzNDIyMloXDTI5MDQwNTAzNDIyMlowOjE4MDYGA1UEAwwvYWY1ZjU4\n...\n-----END CERTIFICATE-----\n",
             "name": "i.e.\"Users DB(readonly)\" or \"Internal Admin API\"",
             "password": "密码",
-            "username": "用户名"
+            "private_key": "{\n  \"type\": \"service_account\",\n  \"project_id\": \"projectId\",\n  \"private_key_id\": \"privateKeyId\",\n  \"private_key\": \"-----BEGIN PRIVATE KEY-----\nprivateKey\n-----END PRIVATE KEY-----\",\n  \"client_email\": \"clientEmail\",\n  \"client_id\": \"100000000000000000000\",\n  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\n  \"token_uri\": \"https://oauth2.googleapis.com/token\",\n  \"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\n  \"client_x509_cert_url\": \"clientx509CertUrl\"\n}",
+            "username": "用户名",
+            "default": "default",
+            "hugging_face_url": "Use the absolute URL (e.g https://api-inference.huggingface.co/models/). "
           },
           "tip": {
             "connect_type": "云服务器: ILLA 服务器将安全地连接到您的数据库",
             "name": "为这个在ILLA中的资源命名",
+            "private_key": "<0>点此</0>查看如何生成密钥",
             "ssl_options": "可用时使用 SSL",
-            "username_password": "凭证将被加密并安全存储在我们的服务器上"
+            "username_password": "凭证将被加密并安全存储在我们的服务器上",
+            "introspection": "如果你的GraphQL端点不支持introspection查询，就开启该开关。请注意，禁用introspection会降低GraphQL的可用性，因为该资源的自动完成和提示将不再工作。",
+            "hugging_face_url": "<0>Click here</0> to learn more about Hugging Face.",
+            "bear_token": "Get a User Access or API token <0>in your Hugging Face profile settings.</0>"
           },
           "title": {
             "advanced_option": "高级配置",
-            "general_option": "通用"
+            "general_option": "通用",
+            "graphql_introspection": "GRAPHQL INTROSPECTION"
           }
         },
         "error": {
-          "invalid_url": "请输入可用的URL，例如http:\/\/example.com"
+          "invalid_url": "请输入可用的URL，例如http://example.com"
         },
         "restapi": {
           "btns": {
@@ -351,13 +452,12 @@
           },
           "placeholder": {
             "access_token_lifespan": "Token Lifespan in seconds",
-            "access_token_url": "https:\/\/www.googleapis.com\/oauth2\/v4\/token",
+            "access_token_url": "https://www.googleapis.com/oauth2/v4/token",
             "api": "i.e.\"Internal Admin API\"",
-            "authorization_url": "https:\/\/accounts.google.com\/o\/oauth2\/v2\/auth",
-            "base_url": "请使用绝对 URL (e.g https:\/\/example.com)",
+            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth",
+            "base_url": "请使用绝对 URL (e.g https://example.com)",
             "database": "i.e.\"Users DB(readonly)\"",
             "name": "i.e.\"Users DB(readonly)\" or \"Internal Admin API\"",
-            "oauth_callback_url": "https:\/\/oauth.retool.com\/oauth\/user\/oauthcallback",
             "param_key": "key",
             "param_value": "value",
             "password": "密码",
@@ -384,7 +484,7 @@
             "use_custome_s3_endpoint": "使用自定义S3端点"
           },
           "placeholder": {
-            "base_url": "例如https:\/\/example.com",
+            "base_url": "例如https://example.com",
             "region": "us-west-1"
           },
           "tip": {
@@ -393,7 +493,7 @@
         },
         "transformer": {
           "placeholder": {
-            "tip": "\/\/ Tip: assign your external references to variables instead of chaining off the curly brackets."
+            "tip": "// Tip: assign your external references to variables instead of chaining off the curly brackets."
           },
           "tip": {
             "external_reference": "您可以创建对已定义变量的外部引用。 例如 {{ transformer2.value }}"
@@ -423,7 +523,8 @@
       "cancel": "取消",
       "delete": "删除",
       "delete_content": "删除它后无法恢复，可能会导致程序出错，请确认引用后删除",
-      "delete_title": "你想要删除 {{ displayName }} 吗？"
+      "delete_title": "你想要删除 {{ displayName }} 吗？",
+      "editor_list": "正在编辑的用户"
     },
     "context_menu": {
       "delete": "删除",
@@ -517,7 +618,9 @@
           "row_select": "选择行",
           "sortingChange": "排序方式改变",
           "submit": "提交",
-          "success": "成功后"
+          "success": "成功后",
+          "onOpenModal": "打开对话框",
+          "onCloseModal": "关闭对话框"
         }
       },
       "setter_default_value": {
@@ -533,6 +636,23 @@
           "email": " 邮箱",
           "regex": "正则表达式",
           "url": "URL"
+        },
+        "height": {
+          "fixed": "固定",
+          "auto": "自适应"
+        },
+        "upload_type": {
+          "button": "Button",
+          "dropzone": "Dropzone"
+        },
+        "selection_types": {
+          "single_file": "Single file",
+          "multiple_files": "Multiple files",
+          "directory": "Directory"
+        },
+        "size_type": {
+          "kb": "KB",
+          "mb": "MB"
         }
       },
       "setter_group": {
@@ -710,14 +830,31 @@
         "x_axis_type": "X轴类型",
         "x_axis_value": "X 轴",
         "y_axis_name": "纵坐标名称",
-        "y_axis_title": "Y轴标题"
+        "y_axis_title": "Y轴标题",
+        "height": "高度",
+        "min_height": "最小高度（像素）",
+        "show_underline": "展示下划线",
+        "auto_play": "自动播放",
+        "interval": "间隔时间（毫秒）",
+        "show_button": "显示两侧按钮",
+        "show_dot": "显示底部指示点",
+        "hidden_images": "Hidden images",
+        "file_type": "File types",
+        "selection_types": "Selection types",
+        "append_newly_files": "Append newly selected files",
+        "file_list": "File list",
+        "parse_value": "Parse Value",
+        "max_files": "Max files",
+        "min_files": "Min files",
+        "max_size": "Max size",
+        "min_size": "Min size"
       },
       "setter_tooltip": {
         "action": "您对组件的操作会触发查询、控制组件或调用资源中的数据等操作。多个异步操作将并行执行。",
         "cascader_data": "每个选项必须是JSON格式，包含value和label两个键，值可以自定义。通过使用数组,可以创建同一级别的选项，添加 children 属性可以添加子集",
         "component_default_value": "组件的默认值。您可以使用模版语法在框中输入 JavaScript 语句动态改变默认值。",
         "custom_rule": "在此处输入验证规则。 验证规则应该由 JavaScript 构成。",
-        "date_format": "一个符合规范的时间格式，请参考 [dayJs](https:\/\/day.js.org\/docs\/en\/parse\/string-format)",
+        "date_format": "一个符合规范的时间格式，请参考 [dayJs](https://day.js.org/docs/en/parse/string-format)",
         "default_value": "输入框的默认值。您可以使用模版语法在框中输入JavaScript语句动态改变输入框的默认值。",
         "disabled": "控制组件是否为禁用状态。当组件为禁用状态时，组件不能被修改。",
         "disabled_submit": "禁用提交时，调用form.submit()方法的组件也会被禁用。",
@@ -729,7 +866,7 @@
         "input_default_value": "输入框的默认值。您可以使用模版语法在框中输入 JavaScript 语句动态改变输入框的默认值。",
         "loading": "控制组件是否为加载状态。",
         "map_data_option": "使用数值或由键值组成的对象映射成选项。数据源中的每个项都映射到每个选项。",
-        "mapped_value": "使用 {{ currentRow }} 来访问当前行的数据。例如，根据 \"成本 \"和 \"点击次数 \"列计算得到\"每次点击成本\"：\n  {{ currentRow.cost \/ currentRow.clickTimes }}",
+        "mapped_value": "使用 {{ currentRow }} 来访问当前行的数据。例如，根据 \"成本 \"和 \"点击次数 \"列计算得到\"每次点击成本\"：\n  {{ currentRow.cost / currentRow.clickTimes }}",
         "multi_row_selection": "您可以使用{{table.selectedRow[n].columnName}}来访问数据。",
         "only_run_when": "在此输入该事件执行前必须满足的条件。",
         "placeholder": "当输入中没有值时，展示的信息。",
@@ -743,11 +880,20 @@
         "text_value": "您可以选择在 Markdown 模式或纯文本模式下输入值。只有在 Markdown 模式下可以输入链接。",
         "timeline_direction": "切换时间轴的方向。",
         "timeline_pending": "是否显示一个待处理状态的节点。",
-        "tooltip": "用户可以在输入框输入提示内容，当鼠标放在组件上，展示提示信息，支持Markdown格式。"
+        "tooltip": "用户可以在输入框输入提示内容，当鼠标放在组件上，展示提示信息，支持Markdown格式。",
+        "file_types": "A list of file extensions allowed to upload. No value will permit all file types.",
+        "file_list": "To show a list of selected files below the uploader. The height of uploader will change dynamically based on the length of file list.",
+        "parse_value": "Attempt to parse the selected files, with support for JSON, CSV, TSV, Excel, and TXT files.\nParsed data can be accessed via {{uploader1.parsedValue}}. Files that can not be parsed will be null in the array.\nAll files are available as base64 encoded strings on the value array, regardless of this option."
       },
       "tab_title": "属性",
       "unselected_tip1": "没有组件被选中。",
-      "unselected_tip2": "请点击组件以选中。"
+      "unselected_tip2": "请点击组件以选中。",
+      "setter": {
+        "click_mask_close": "点击遮罩关闭modal"
+      },
+      "setter_tips": {
+        "carousel_tips": "Use {{ currentItem }} to get value from the data source. For example, there are two columns in the data source. They are image and url. If you want to go to different url when click image, use {{ currentItem.url }} to set the url."
+      }
     },
     "page": {
       "label_name": {
@@ -765,7 +911,9 @@
         "show_fold_icon": "显示折叠按钮",
         "view_path": "视图路径",
         "views": "视图",
-        "width": "宽度"
+        "width": "宽度",
+        "height": "高度",
+        "columns": "列数"
       },
       "model_tips": {
         "cancel_button": "取消",
@@ -780,7 +928,8 @@
       "tab_title": "页面",
       "tooltips": {
         "show_fold_icon": "显示一个按钮，用于收起或展开面板",
-        "view_path": "一个拼example.com\/app\/page\/后面的字符串，用来访问这个视图"
+        "view_path": "一个拼example.com/app/page/后面的字符串，用来访问这个视图",
+        "auto_canvas_width": "页面宽度占浏览器宽度的百分比。"
       }
     },
     "validate_message": {
@@ -816,7 +965,14 @@
   "link_copied": "链接已复制",
   "network_error": "网络异常",
   "not_online_tips": "网络已断开，请检查此设备的网络",
-  "preview": "预览",
+  "preview": {
+    "viewport": {
+      "size": "尺寸",
+      "reset": "重置",
+      "save": "保存"
+    },
+    "button_text": "预览"
+  },
   "remove_fail": "删除失败",
   "rename": "重命名",
   "resources": "资源",
@@ -862,7 +1018,9 @@
     "500": {
       "des": "请求失败，请稍后再试。"
     },
-    "back": "回到主页"
+    "back": "回到主页",
+    "mobile_forbidden": "为获得更好的编辑体验，请通过电脑端访问",
+    "back_to_cloud": "返回ILLA Cloud"
   },
   "title": "欢迎来到艾拉云",
   "unfreeze_tips": "冻结画布后，可以把组件拖进或拖出容器。（D或K）",
@@ -915,8 +1073,8 @@
       },
       "description": {
         "forgot_password": "忘记密码?",
-        "policy": "点击「登录」表示已阅读并同意<0>服务条款<\/0>和<1>隐私协议<\/1>",
-        "register": "新用户？<0>注册账号<\/0>"
+        "policy": "点击「登录」表示已阅读并同意<0>服务条款</0>和<1>隐私协议</1>",
+        "register": "新用户？<0>注册账号</0>"
       },
       "error_message": {
         "email": {
@@ -950,8 +1108,8 @@
         "send": "获取验证码"
       },
       "description": {
-        "login": "已有账户？ <0>登录<\/0>",
-        "policy": "点击「立即注册」表示已阅读并同意<0>服务条款<\/0>和<1>隐私协议<\/1>",
+        "login": "已有账户？ <0>登录</0>",
+        "policy": "点击「立即注册」表示已阅读并同意<0>服务条款</0>和<1>隐私协议</1>",
         "subscribe": "订阅ILLA的动态"
       },
       "error_message": {
@@ -1014,7 +1172,7 @@
       "name": "圆形进度条"
     },
     "container": {
-      "empty": "按住 <keyPress>D<\/keyPress> 或 <keyPress>K<\/keyPress> ，将组件拖入容器",
+      "empty": "按住 <keyPress>D</keyPress> 或 <keyPress>K</keyPress> ，将组件拖入容器",
       "key_duplicated": "键值重复，请使用唯一值以避免报错。",
       "name": "容器"
     },
@@ -1097,6 +1255,162 @@
       "horizontal": "横向",
       "name": "时间线",
       "vertical": "纵向"
+    },
+    "modal": {
+      "name": "对话框"
+    },
+    "textarea": {
+      "name": "Textarea"
+    },
+    "upload": {
+      "name": "Upload",
+      "default_button_text": "Upload",
+      "default_dropzone_text": "Select or drop a file here"
+    }
+  },
+  "page": {
+    "size": {
+      "model": {
+        "fixed": "固定宽度",
+        "auto": "自适应"
+      }
+    }
+  },
+  "frame_size": {
+    "invalid_tips": "请输入不小于 {{ size }} 的值。"
+  },
+  "failed_to_copy": "复制失败",
+  "copied": "复制成功！",
+  "user_management": {
+    "role": {
+      "owner": "所有者",
+      "admin": "管理员",
+      "editor": "编辑者",
+      "viewer": "浏览者"
+    },
+    "modal": {
+      "title": {
+        "invite_members": "邀请成员"
+      },
+      "link": {
+        "invite_title": "邀请链接",
+        "copy": "复制",
+        "turn_off": "关闭邀请链接",
+        "update": "更新邀请链接",
+        "description": "允许用户通过您分享的私密链接加入团队",
+        "turn_on": "打开邀请链接",
+        "fail": "链接获取失败，请稍后重试",
+        "copied_suc": "复制成功！",
+        "failed_to_copy": "复制失败",
+        "turn_off_fail": "关闭失败",
+        "turn_on_fail": "开启失败"
+      },
+      "email": {
+        "invite_title": "通过电子邮件邀请",
+        "invite": "邀请",
+        "placeholder": "输入电子邮件地址",
+        "invited": "已邀请",
+        "in_list": "该用户已加入您的团队"
+      },
+      "invalid_email": "请输入有效的电子邮件"
+    },
+    "mes": {
+      "invite_suc": "邀请成功",
+      "invite_fail": "邀请失败",
+      "update_suc": "更新成功",
+      "update_fail": "更新失败",
+      "transfer_suc": "转移成功",
+      "transfer_fail": "转移失败",
+      "remove_suc": "移除成功",
+      "remove_fail": "移除失败",
+      "change_role_fail": "更新失败",
+      "change_role_suc": "更新成功"
+    },
+    "page": {
+      "member": "成员",
+      "invite": "邀请",
+      "permission": "权限",
+      "operation": "操作",
+      "transfer": "转移所有权",
+      "remove": "移除"
+    },
+    "transfer_modal": {
+      "title": "您确定要转移所有权吗？",
+      "description": "转移后，您的权限将更改为管理员。",
+      "transfer": "转移",
+      "cancel": "取消"
+    },
+    "remove_modal": {
+      "title": "你想要删除 {{ username }} 吗？",
+      "description": "删除后，用户将无法访问该团队。",
+      "remove": "移除",
+      "cancel": "取消"
+    },
+    "status": {
+      "pending": "等待处理"
+    },
+    "settings": {
+      "allow_editors_invite": "允许编辑者和浏览者管理成员"
+    }
+  },
+  "copy_failed": "复制失败",
+  "team_setting": {
+    "left_panel": {
+      "setting_title": "团队设置",
+      "member": "成员",
+      "leave": "离开团队",
+      "delete": "删除团队"
+    },
+    "leave_modal": {
+      "title": "确认离开当前团队吗？",
+      "description": "离开该团队后，您将无法访问任何团队资源。",
+      "leave": "离开",
+      "cancel": "取消"
+    },
+    "delete_modal": {
+      "title": "确认删除团队吗？",
+      "delete": "删除",
+      "cancel": "取消",
+      "desctiption": "删除后，团队标识符将被同步删除，所有成员将从此团队中移除。"
+    },
+    "team_info": {
+      "title": "团队信息",
+      "team_name": "团队名称",
+      "domain": ".illacloud.com",
+      "existed": "已存在",
+      "available": "可用",
+      "edit": "编辑",
+      "save": "保存变更",
+      "adjust_avater": "编辑头像",
+      "avater_crop": "裁剪",
+      "team_name_empty": "请输入团队名称",
+      "team_id_empty": "请输入团队标识符",
+      "team_name_placeholder": "请输入团队名称",
+      "team_id_placeholder": "请输入团队标识符",
+      "leave_title": "离开团队",
+      "leave_button": "离开团队",
+      "delete_title": "删除团队",
+      "delete_button": "删除团队",
+      "team_domain": "团队标识符"
+    },
+    "message": {
+      "save_suc": "保存成功",
+      "save_fail": "保存失败"
+    },
+    "mes": {
+      "domain_suc": "创建成功",
+      "delete_suc": "删除成功",
+      "delete_fail": "删除失败",
+      "leave_suc": "退出成功",
+      "leave_fail": "退出失败"
+    }
+  },
+  "members": "成员",
+  "invite_new_member": "邀请成员",
+  "launch": " 运行",
+  "homepage": {
+    "message": {
+      "join_failed": "未成功加入团队：您登录的邮箱不是被邀请的邮箱"
     }
   }
 }

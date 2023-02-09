@@ -16,6 +16,14 @@ import {
   useMessage,
 } from "@illa-design/react"
 import { Api } from "@/api/base"
+import {
+  configItem,
+  configItemTip,
+  connectType,
+  connectTypeStyle,
+  labelContainer,
+  optionLabelStyle,
+} from "@/page/App/components/Actions/styles"
 import { MysqlLikeResource } from "@/redux/resource/mysqlLikeResource"
 import { resourceActions } from "@/redux/resource/resourceSlice"
 import { Resource, generateSSLConfig } from "@/redux/resource/resourceState"
@@ -24,15 +32,10 @@ import { isCloudVersion } from "@/utils/typeHelper"
 import { MysqlLikeConfigElementProps } from "./interface"
 import {
   applyConfigItemLabelText,
-  configItem,
-  configItemTip,
-  connectTypeStyle,
   container,
   divider,
   footerStyle,
   hostInputContainer,
-  labelContainer,
-  optionLabelStyle,
   sslItem,
   sslStyle,
 } from "./style"
@@ -42,6 +45,22 @@ import {
  * @param props
  * @constructor
  */
+
+const getResourceDefaultPort = (resourceType: string) => {
+  switch (resourceType) {
+    case "postgresql":
+    case "supabasedb":
+      return "5432"
+    case "mysql":
+    case "mariadb":
+      return "3306"
+    case "tidb":
+      return "4000"
+    default:
+      return "3306"
+  }
+}
+
 export const MysqlLikeConfigElement: FC<MysqlLikeConfigElementProps> = (
   props,
 ) => {
@@ -243,7 +262,7 @@ export const MysqlLikeConfigElement: FC<MysqlLikeConfigElementProps> = (
                   borderColor="techPurple"
                   w="142px"
                   ml="8px"
-                  placeholder="3306"
+                  placeholder={getResourceDefaultPort(resourceType)}
                 />
               )}
               name="port"
@@ -340,7 +359,7 @@ export const MysqlLikeConfigElement: FC<MysqlLikeConfigElementProps> = (
             <div css={configItemTip}>
               {t("editor.action.resource.db.tip.username_password")}
             </div>
-            <div css={configItem}>
+            <div css={connectType}>
               <div css={labelContainer}>
                 <span
                   css={applyConfigItemLabelText(getColor("grayBlue", "02"))}

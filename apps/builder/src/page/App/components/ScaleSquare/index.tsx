@@ -1,4 +1,5 @@
 import { cloneDeep, get, throttle } from "lodash"
+import { Resizable, ResizeCallback, ResizeStartCallback } from "re-resizable"
 import {
   MouseEvent,
   memo,
@@ -39,6 +40,9 @@ import {
   isShowDot,
 } from "@/redux/config/configSelector"
 import { configActions } from "@/redux/config/configSlice"
+import { updateCurrentAllComponentsAttachedUsers } from "@/redux/currentApp/collaborators/collaboratorsHandlers"
+import { getComponentAttachUsers } from "@/redux/currentApp/collaborators/collaboratorsSelector"
+import { CollaboratorsInfo } from "@/redux/currentApp/collaborators/collaboratorsState"
 import { getFlattenArrayComponentNodes } from "@/redux/currentApp/editor/components/componentsSelector"
 import { componentsActions } from "@/redux/currentApp/editor/components/componentsSlice"
 import { ComponentNode } from "@/redux/currentApp/editor/components/componentsState"
@@ -46,6 +50,7 @@ import {
   getExecutionError,
   getExecutionResult,
 } from "@/redux/currentApp/executionTree/executionSelector"
+import { getCurrentUser } from "@/redux/currentUser/currentUserSelector"
 import store, { RootState } from "@/store"
 import { CopyManager } from "@/utils/copyManager"
 import { endDrag, startDrag } from "@/utils/drag/drag"
@@ -70,7 +75,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
     containerHeight,
     childrenNode,
     collisionEffect,
-    columnsNumber,
+    blockColumns,
   } = props
 
   const canRenderDashedLine = !collisionEffect.has(componentNode.displayName)
@@ -98,6 +103,17 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
   const dispatch = useDispatch()
 
   const isShowCanvasDot = useSelector(isShowDot)
+
+  const componentsAttachedUsers = useSelector(
+    getComponentAttachUsers,
+  ) as Record<string, CollaboratorsInfo[]>
+  const currentUsesInfo = useSelector(getCurrentUser)
+  const attachedUserList =
+    componentsAttachedUsers[componentNode.displayName] || []
+  const filteredComponentAttachedUserList = attachedUserList.filter(
+    (user) => `${user.id}` !== `${currentUsesInfo.userId}`,
+  )
+
   const illaMode = useSelector(getIllaMode)
   const errors = useSelector(getExecutionError)
   const selectedComponents = useSelector(getSelectedComponents)
@@ -174,17 +190,24 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
         )
         if (index !== -1) {
           currentSelectedDisplayName.splice(index, 1)
-          dispatch(
-            configActions.updateSelectedComponent(currentSelectedDisplayName),
-          )
         } else {
           currentSelectedDisplayName.push(componentNode.displayName)
-          dispatch(
-            configActions.updateSelectedComponent(currentSelectedDisplayName),
-          )
         }
+        dispatch(
+          configActions.updateSelectedComponent(currentSelectedDisplayName),
+        )
+        updateCurrentAllComponentsAttachedUsers(
+          currentSelectedDisplayName,
+          componentsAttachedUsers,
+        )
+
         return
       }
+      updateCurrentAllComponentsAttachedUsers(
+        [componentNode.displayName],
+        componentsAttachedUsers,
+      )
+
       dispatch(
         configActions.updateSelectedComponent([componentNode.displayName]),
       )
@@ -192,7 +215,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
     [componentNode.displayName, dispatch, illaMode, selectedComponents],
   )
 
-  const handleOnResizeStop = useCallback(
+  const handleOnResizeStop: RndResizeCallback = useCallback(
     (e, dir, ref, delta, position) => {
       const { width, height } = delta
       const finalWidth = Math.round((w + width) / unitW)
@@ -263,7 +286,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
         return {
           item: componentNode,
           childrenNodes,
-          currentColumnNumber: columnsNumber,
+          currentColumnNumber: blockColumns,
         }
       },
       collect: (monitor) => {
@@ -272,7 +295,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
         }
       },
     }),
-    [illaMode, componentNode],
+    [illaMode, componentNode, blockColumns],
   )
 
   const resizeHandler = useMemo(() => {
@@ -439,9 +462,15 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
       dispatch(
         configActions.updateSelectedComponent([componentNode.displayName]),
       )
+      updateCurrentAllComponentsAttachedUsers(
+        [componentNode.displayName],
+        componentsAttachedUsers,
+      )
     },
     [componentNode.displayName, dispatch],
   )
+
+  const hasEditors = !!filteredComponentAttachedUserList.length
 
   //  1px is left border width
   return isDragging ? null : (
@@ -459,6 +488,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
         illaMode === "edit" && isSelected ? enableResizing : false
       }
       css={applyRNDWrapperStyle(
+        hasEditors,
         isSelected,
         hasError,
         isShowCanvasDot,
@@ -501,6 +531,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
         <div
           className="wrapperPending"
           css={applyWrapperPendingStyle(
+            hasEditors,
             isSelected,
             hasError,
             isDragging,
@@ -521,9 +552,13 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
             containerPadding={containerPadding || 0}
             containerHeight={containerHeight}
             widgetType={componentNode.type}
+            userList={filteredComponentAttachedUserList}
           />
 
-          <TransformWidgetWrapper componentNode={componentNode} />
+          <TransformWidgetWrapper
+            componentNode={componentNode}
+            blockColumns={blockColumns}
+          />
           {canRenderDashedLine && (
             <div
               css={applyDashedLineStyle(
@@ -542,7 +577,7 @@ export const ScaleSquare = memo<ScaleSquareProps>((props: ScaleSquareProps) => {
 
 export const ScaleSquareWithJSON = memo<ScaleSquarePropsWithJSON>(
   (props: ScaleSquarePropsWithJSON) => {
-    const { componentNode, unitW, unitH, w, h, x, y } = props
+    const { componentNode, unitW, unitH, w, h, x, y, blockColumns } = props
 
     //  1px is left border width
     return (
@@ -563,14 +598,376 @@ export const ScaleSquareWithJSON = memo<ScaleSquarePropsWithJSON>(
       >
         <div
           className="wrapperPending"
-          css={applyWrapperPendingStyle(false, false, false, false)}
+          css={applyWrapperPendingStyle(false, false, false, false, false)}
         >
-          <TransformWidgetWrapperWithJson componentNode={componentNode} />
+          <TransformWidgetWrapperWithJson
+            componentNode={componentNode}
+            blockColumns={blockColumns}
+          />
         </div>
       </Rnd>
     )
   },
 )
+
+export const ScaleSquareOnlyHasResize = (props: ScaleSquareProps) => {
+  const {
+    componentNode,
+    unitW,
+    unitH,
+    w,
+    h,
+    y,
+    containerPadding,
+    containerHeight,
+    childrenNode,
+    collisionEffect,
+    blockColumns,
+  } = props
+
+  const canRenderDashedLine = !collisionEffect.has(componentNode.displayName)
+  const realProps = useSelector<RootState, Record<string, any>>((rootState) => {
+    const executionResult = getExecutionResult(rootState)
+    return get(executionResult, componentNode.displayName, null)
+  })
+
+  const displayNameInMoveBar = useMemo(() => {
+    if (componentNode.type === "CONTAINER_WIDGET" && realProps) {
+      const { currentIndex, viewList } = realProps
+      if (!Array.isArray(viewList) || currentIndex >= viewList.length)
+        return componentNode.displayName + " / " + "View 1"
+      const labelName = viewList[currentIndex]
+        ? viewList[currentIndex].label
+        : currentIndex
+      return componentNode.displayName + " / " + labelName
+    }
+    return componentNode.displayName
+  }, [componentNode.displayName, componentNode.type, realProps])
+
+  const shortcut = useContext(ShortCutContext)
+
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+
+  const isShowCanvasDot = useSelector(isShowDot)
+  const illaMode = useSelector(getIllaMode)
+  const errors = useSelector(getExecutionError)
+  const selectedComponents = useSelector(getSelectedComponents)
+
+  const componentsAttachedUsers = useSelector(
+    getComponentAttachUsers,
+  ) as Record<string, CollaboratorsInfo[]>
+  const currentUsesInfo = useSelector(getCurrentUser)
+  const attachedUserList =
+    componentsAttachedUsers[componentNode.displayName] || []
+  const filteredComponentAttachedUserList = attachedUserList.filter(
+    (user) => `${user.id}` !== `${currentUsesInfo.userId}`,
+  )
+
+  const childNodesRef = useRef<ComponentNode[]>(childrenNode || [])
+
+  const resizeDirection = useMemo(() => {
+    const widgetConfig = widgetBuilder(componentNode.type).config
+    return widgetConfig.resizeDirection || RESIZE_DIRECTION.ALL
+  }, [componentNode.type])
+
+  const hasError = useMemo(() => {
+    const displayName = componentNode.displayName
+    const widgetErrors = errors[displayName] ?? {}
+    return Object.keys(widgetErrors).length > 0
+  }, [componentNode.displayName, errors])
+
+  const isSelected = useMemo(() => {
+    return selectedComponents.some((displayName) => {
+      return displayName === componentNode.displayName
+    })
+  }, [componentNode.displayName, selectedComponents])
+
+  let scaleSquareState: ScaleSquareType = useMemo(
+    () => (hasError ? "error" : "normal"),
+    [hasError],
+  )
+  if (illaMode !== "edit") {
+    scaleSquareState = "production"
+  }
+
+  const handleOnSelection = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      if (illaMode !== "edit") return
+      e.stopPropagation()
+      if (e.metaKey || e.shiftKey) {
+        const currentSelectedDisplayName = cloneDeep(selectedComponents)
+
+        const index = currentSelectedDisplayName.findIndex(
+          (displayName) => displayName === componentNode.displayName,
+        )
+        if (index !== -1) {
+          currentSelectedDisplayName.splice(index, 1)
+        } else {
+          currentSelectedDisplayName.push(componentNode.displayName)
+        }
+        dispatch(
+          configActions.updateSelectedComponent(currentSelectedDisplayName),
+        )
+
+        updateCurrentAllComponentsAttachedUsers(
+          currentSelectedDisplayName,
+          componentsAttachedUsers,
+        )
+        return
+      }
+      dispatch(
+        configActions.updateSelectedComponent([componentNode.displayName]),
+      )
+      updateCurrentAllComponentsAttachedUsers(
+        [componentNode.displayName],
+        componentsAttachedUsers,
+      )
+    },
+    [componentNode.displayName, dispatch, illaMode, selectedComponents],
+  )
+
+  const handleOnResizeStop: ResizeCallback = useCallback(
+    (e, dir, ref, delta) => {
+      const { width, height } = delta
+      const finalWidth = Math.round((w + width) / unitW)
+      const finalHeight = Math.round((h + height) / unitH)
+
+      const newComponentNode = {
+        ...componentNode,
+        w: finalWidth,
+        h: finalHeight,
+        isResizing: false,
+      }
+
+      dispatch(
+        componentsActions.updateComponentsShape({
+          isMove: false,
+          components: [newComponentNode],
+        }),
+      )
+      dispatch(configActions.updateShowDot(false))
+    },
+    [componentNode, dispatch, h, unitH, unitW, w],
+  )
+
+  const resizeHandler = useMemo(() => {
+    switch (resizeDirection) {
+      case RESIZE_DIRECTION.HORIZONTAL: {
+        return {
+          right: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "r")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "r")}
+              />
+            </div>
+          ),
+          left: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "l")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "l")}
+              />
+            </div>
+          ),
+        }
+      }
+      case RESIZE_DIRECTION.VERTICAL: {
+        return {
+          top: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "t")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "t")}
+              />
+            </div>
+          ),
+          bottom: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "b")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "b")}
+              />
+            </div>
+          ),
+        }
+      }
+      case RESIZE_DIRECTION.ALL:
+      default: {
+        return {
+          topLeft: (
+            <div
+              css={applySquarePointerStyle(isSelected, scaleSquareState, "tl")}
+            />
+          ),
+          top: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "t")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "t")}
+              />
+            </div>
+          ),
+          topRight: (
+            <div
+              css={applySquarePointerStyle(isSelected, scaleSquareState, "tr")}
+            />
+          ),
+          right: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "r")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "r")}
+              />
+            </div>
+          ),
+          bottomRight: (
+            <div
+              css={applySquarePointerStyle(isSelected, scaleSquareState, "br")}
+            />
+          ),
+          bottom: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "b")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "b")}
+              />
+            </div>
+          ),
+          bottomLeft: (
+            <div
+              css={applySquarePointerStyle(isSelected, scaleSquareState, "bl")}
+            />
+          ),
+          left: (
+            <div css={applyBarHandlerStyle(isSelected, scaleSquareState, "l")}>
+              <div
+                className="handler"
+                css={applyBarPointerStyle(isSelected, scaleSquareState, "l")}
+              />
+            </div>
+          ),
+        }
+      }
+    }
+  }, [isSelected, resizeDirection, scaleSquareState])
+
+  const handleResizeStart: ResizeStartCallback = useCallback(
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      dispatch(
+        componentsActions.updateComponentsShape({
+          isMove: false,
+          components: [
+            {
+              ...componentNode,
+              isResizing: true,
+            },
+          ],
+        }),
+      )
+      childNodesRef.current = childrenNode ? cloneDeep(childrenNode) : []
+      dispatch(configActions.updateShowDot(true))
+    },
+    [componentNode, childrenNode, dispatch],
+  )
+
+  const handleContextMenu = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+      dispatch(
+        configActions.updateSelectedComponent([componentNode.displayName]),
+      )
+      updateCurrentAllComponentsAttachedUsers(
+        [componentNode.displayName],
+        componentsAttachedUsers,
+      )
+    },
+    [componentNode.displayName, dispatch],
+  )
+
+  const hasEditors = !!filteredComponentAttachedUserList.length
+
+  return (
+    <Resizable
+      bounds="parent"
+      size={{
+        width: w + 1,
+        height: h + 1,
+      }}
+      minWidth={componentNode.minW * unitW}
+      minHeight={componentNode.minH * unitH}
+      handleComponent={resizeHandler}
+      onResizeStart={handleResizeStart}
+      onResizeStop={handleOnResizeStop}
+    >
+      <Dropdown
+        disabled={illaMode !== "edit"}
+        position="right-start"
+        trigger="contextmenu"
+        dropList={
+          <DropList width="184px">
+            <Item
+              key="duplicate"
+              title={t("editor.context_menu.duplicate")}
+              onClick={() => {
+                CopyManager.copyComponentNode([componentNode])
+                CopyManager.paste()
+              }}
+            />
+            <Item
+              fontColor={globalColor(`--${illaPrefix}-red-03`)}
+              key="delete"
+              title={t("editor.context_menu.delete")}
+              onClick={() => {
+                shortcut.showDeleteDialog([componentNode.displayName])
+              }}
+            />
+          </DropList>
+        }
+      >
+        <div
+          className="wrapperPending"
+          css={applyWrapperPendingStyle(
+            hasEditors,
+            isSelected,
+            hasError,
+            false,
+            illaMode === "edit",
+          )}
+          onClick={handleOnSelection}
+          onContextMenu={handleContextMenu}
+        >
+          <MoveBar
+            isError={hasError}
+            displayName={displayNameInMoveBar}
+            maxWidth={componentNode.w * unitW}
+            selected={isSelected}
+            isEditor={illaMode === "edit"}
+            widgetTop={y}
+            widgetHeight={h}
+            containerPadding={containerPadding || 0}
+            containerHeight={containerHeight}
+            widgetType={componentNode.type}
+            userList={filteredComponentAttachedUserList}
+          />
+
+          <TransformWidgetWrapper
+            componentNode={componentNode}
+            blockColumns={blockColumns}
+          />
+          {canRenderDashedLine && (
+            <div
+              css={applyDashedLineStyle(isSelected, isShowCanvasDot, false)}
+            />
+          )}
+        </div>
+      </Dropdown>
+    </Resizable>
+  )
+}
 
 ScaleSquareWithJSON.displayName = "ScaleSquareWithJSON"
 ScaleSquare.displayName = "ScaleSquare"

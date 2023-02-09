@@ -4,11 +4,12 @@ import { FC, MouseEvent, useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
-import { WarningCircleIcon } from "@illa-design/react"
+import { TriggerProvider, WarningCircleIcon } from "@illa-design/react"
 import { Api } from "@/api/base"
 import { Connection } from "@/api/ws"
 import { useInitBuilderApp } from "@/hooks/useInitApp"
 import { ActionEditor } from "@/page/App/components/Actions"
+import { initS3Client } from "@/page/App/components/Actions/ActionPanel/utils/clientS3"
 import { AppLoading } from "@/page/App/components/AppLoading"
 import { CanvasPanel } from "@/page/App/components/CanvasPanel"
 import { ComponentsManager } from "@/page/App/components/ComponentManager"
@@ -22,9 +23,12 @@ import {
   isOpenRightPanel,
 } from "@/redux/config/configSelector"
 import { setupActionListeners } from "@/redux/currentApp/action/actionListener"
+import { appInfoActions } from "@/redux/currentApp/appInfo/appInfoSlice"
+import { collaboratorsActions } from "@/redux/currentApp/collaborators/collaboratorsSlice"
 import { setupComponentsListeners } from "@/redux/currentApp/editor/components/componentsListener"
 import { setupExecutionListeners } from "@/redux/currentApp/executionTree/executionListener"
 import { getCurrentUser } from "@/redux/currentUser/currentUserSelector"
+import { DashboardAppInitialState } from "@/redux/dashboard/apps/dashboardAppState"
 import { resourceActions } from "@/redux/resource/resourceSlice"
 import { Resource, ResourceContent } from "@/redux/resource/resourceState"
 import { startAppListening } from "@/store"
@@ -53,6 +57,10 @@ export const Editor: FC = () => {
 
   const currentUser = useSelector(getCurrentUser)
 
+  const handleLeaveRoom = () => {
+    Connection.leaveRoom("app", appId ?? "")
+  }
+
   useEffect(() => {
     if (currentUser != null && currentUser.userId != "") {
       Connection.enterRoom(
@@ -61,9 +69,16 @@ export const Editor: FC = () => {
         (loading) => {},
         (errorState) => {},
       )
+      window.addEventListener("beforeunload", handleLeaveRoom)
     }
     return () => {
-      Connection.leaveRoom("app", appId ?? "")
+      handleLeaveRoom()
+      dispatch(
+        collaboratorsActions.setInRoomUsers({
+          inRoomUsers: [],
+        }),
+      )
+      window.removeEventListener("beforeunload", handleLeaveRoom)
     }
   }, [currentUser, appId])
 
@@ -96,6 +111,7 @@ export const Editor: FC = () => {
       },
       (response) => {
         dispatch(resourceActions.updateResourceListReducer(response.data))
+        initS3Client(response.data)
       },
     )
     return () => {
@@ -134,13 +150,19 @@ export const Editor: FC = () => {
           <div css={contentStyle}>
             {showLeftPanel && <DataWorkspace css={leftPanelStyle} />}
             <div css={middlePanelStyle}>
-              <CanvasPanel css={centerPanelStyle} />
+              <TriggerProvider renderInBody zIndex={10}>
+                <CanvasPanel css={centerPanelStyle} />
+              </TriggerProvider>
               {showBottomPanel && !showDebugger ? (
                 <ActionEditor css={bottomPanelStyle} />
               ) : null}
               {showDebugger && <Debugger css={bottomPanelStyle} />}
             </div>
-            {showRightPanel && <ComponentsManager css={rightPanelStyle} />}
+            {showRightPanel && (
+              <TriggerProvider renderInBody zIndex={10}>
+                <ComponentsManager css={rightPanelStyle} />
+              </TriggerProvider>
+            )}
           </div>
           {!isOnline && (
             <div css={modalStyle} onMouseDown={handleMouseDownOnModal}>

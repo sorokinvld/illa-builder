@@ -10,11 +10,13 @@ import {
   Input,
   Link,
   Password,
-  useMessage,
   WarningCircleIcon,
+  getColor,
+  useMessage,
 } from "@illa-design/react"
 import { Api } from "@/api/base"
 import { EMAIL_FORMAT } from "@/constants/regExp"
+import { formatLanguage, languageKeys } from "@/i18n/config"
 import { TextLink } from "@/page/User/components/TextLink"
 import {
   checkboxTextStyle,
@@ -29,16 +31,14 @@ import {
   gridValidStyle,
 } from "@/page/User/style"
 import { currentUserActions } from "@/redux/currentUser/currentUserSlice"
-import { setLocalStorage } from "@/utils/storage"
-import { RegisterFields, RegisterResult } from "./interface"
+import { getLocalStorage, setLocalStorage } from "@/utils/storage"
 import { isCloudVersion } from "@/utils/typeHelper"
+import { RegisterFields, RegisterResult } from "./interface"
 
 export function getLocalLanguage(): string {
-  const lang = window.navigator.language
-  if (lang === "zh-CN" || lang === "zh") {
-    return "zh-CN"
-  }
-  return "en-US"
+  const lang = getLocalStorage("i18nextLng")
+  const finalLang = formatLanguage(lang)
+  return finalLang
 }
 
 export const Register: FC = () => {
@@ -251,9 +251,13 @@ export const Register: FC = () => {
                       render: showCountDown ? (
                         <Countdown
                           value={Date.now() + 1000 * 60}
-                          mode="builder"
                           now={Date.now()}
                           format="ss"
+                          valueStyle={{
+                            fontSize: "14px",
+                            lineHeight: "22px",
+                            color: getColor("techPurple", "01"),
+                          }}
                           onFinish={() => {
                             setShowCountDown(false)
                           }}

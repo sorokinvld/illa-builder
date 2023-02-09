@@ -22,7 +22,7 @@ export const CanvasPanel: FC<CanvasPanelProps> = (props) => {
   return (
     <div
       {...otherProps}
-      css={applyScaleContainerStyle(100)}
+      css={applyScaleContainerStyle(mode)}
       onClick={() => {
         FocusManager.switchFocus("canvas")
       }}
@@ -30,7 +30,6 @@ export const CanvasPanel: FC<CanvasPanelProps> = (props) => {
       <DotPanel />
       {mode === "edit" && (
         <>
-          {/*TODO: replace this to illa-design/Message,when Message is ok*/}
           {isFreeze ? (
             <div css={messageWrapperStyle}>
               <span css={messageStyle}>

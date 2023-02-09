@@ -1,3 +1,7 @@
+import { ClickhouseResource } from "@/redux/resource/clickhouseResource"
+import { FirebaseResource } from "@/redux/resource/firebaseResource"
+import { GraphQLAuth, GraphQLResource } from "@/redux/resource/graphqlResource"
+import { HuggingFaceResource } from "@/redux/resource/huggingFaceResource"
 import { SMTPResource } from "@/redux/resource/smtpResource"
 import { ElasticSearchResource } from "./elasticSearchResource"
 import { MongoDbConfig, MongoDbResource } from "./mongodbResource"
@@ -7,7 +11,11 @@ import { RestApiAuth, RestApiResource } from "./restapiResource"
 import { S3Resource } from "./s3Resource"
 
 export type ResourceType =
+  | "huggingface"
+  | "firebase"
+  | "supabasedb"
   | "mysql"
+  | "mssql"
   | "restapi"
   | "graphql"
   | "mongodb"
@@ -18,12 +26,17 @@ export type ResourceType =
   | "tidb"
   | "smtp"
   | "s3"
+  | "clickhouse"
 
 export type ResourceContent =
+  | HuggingFaceResource
+  | ClickhouseResource
+  | FirebaseResource
   | SMTPResource
   | S3Resource
   | ElasticSearchResource
   | MysqlLikeResource
+  | GraphQLResource<GraphQLAuth>
   | RestApiResource<RestApiAuth>
   | RedisResource
   | MongoDbResource<MongoDbConfig>
@@ -51,25 +64,87 @@ export interface DbSSL {
   clientCert: string
 }
 
+export interface ClickhouseSSL {
+  ssl: boolean
+  selfSigned: boolean
+  privateKey: string
+  clientCert: string
+  caCert: string
+}
+
+export interface MicrosoftSqlSSL extends Omit<ClickhouseSSL, "selfSigned"> {
+  verificationMode: "full" | "skip"
+}
+
+const MicrosoftSqlSSLInitial: MicrosoftSqlSSL = {
+  ssl: false,
+  privateKey: "",
+  clientCert: "",
+  caCert: "",
+  verificationMode: "full",
+}
+
+const ClickhouseSSLInitial: ClickhouseSSL = {
+  ssl: false,
+  selfSigned: false,
+  privateKey: "",
+  clientCert: "",
+  caCert: "",
+}
+
+const DbSSLInitial: DbSSL = {
+  ssl: false,
+  clientKey: "",
+  clientCert: "",
+  serverCert: "",
+}
+
+type AllSSLConfigType = DbSSL | ClickhouseSSL | MicrosoftSqlSSL
+
+const SSLConfigDefaultValue: Record<string, AllSSLConfigType> = {
+  mssql: MicrosoftSqlSSLInitial,
+  clickhouse: ClickhouseSSLInitial,
+}
+
+const getSSLConfig = (
+  data: { [p: string]: any },
+  type?: ResourceType,
+): AllSSLConfigType => {
+  switch (type) {
+    case "mssql":
+      return {
+        ssl: true,
+        privateKey: data.privateKey,
+        clientCert: data.clientCert,
+        caCert: data.caCert,
+        verificationMode: !!data.caCert ? "full" : "skip",
+      } as MicrosoftSqlSSL
+    case "clickhouse":
+      return {
+        ssl: true,
+        selfSigned: data.selfSigned,
+        privateKey: data.privateKey,
+        clientCert: data.clientCert,
+        caCert: data.caCert,
+      } as ClickhouseSSL
+    default:
+      return {
+        ssl: true,
+        clientKey: data.clientKey,
+        clientCert: data.clientCert,
+        serverCert: data.serverCert,
+      } as DbSSL
+  }
+}
+
 export function generateSSLConfig(
   open: boolean,
   data: { [p: string]: any },
-): DbSSL {
-  if (open) {
-    return {
-      ssl: true,
-      clientKey: data.clientKey,
-      clientCert: data.clientCert,
-      serverCert: data.serverCert,
-    } as DbSSL
-  } else {
-    return {
-      ssl: false,
-      clientKey: "",
-      clientCert: "",
-      serverCert: "",
-    } as DbSSL
-  }
+  type?: ResourceType,
+): DbSSL | ClickhouseSSL | MicrosoftSqlSSL {
+  return open
+    ? getSSLConfig(data, type)
+    : SSLConfigDefaultValue[type || ""] || DbSSLInitial
 }
 
 export type ResourceListState = Resource<ResourceContent>[]

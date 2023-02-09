@@ -10,8 +10,12 @@ export function getActionTypeFromResourceType(
 export function getActionNameFromActionType(actionType: ActionType): string {
   if (actionType) {
     switch (actionType) {
+      case "supabasedb":
+        return "Supabase DB"
       case "mysql":
         return "MySQL"
+      case "mssql":
+        return "Microsoft SQL"
       case "restapi":
         return "REST API"
       case "graphql":
@@ -30,6 +34,12 @@ export function getActionNameFromActionType(actionType: ActionType): string {
         return "TiDB"
       case "smtp":
         return "SMTP"
+      case "huggingface":
+        return "Hugging face Inference API"
+      case "firebase":
+        return "Firebase"
+      case "clickhouse":
+        return "ClickHouse"
       case "s3":
         return "Amazon S3"
       case "transformer":
@@ -47,8 +57,12 @@ export function getResourceNameFromResourceType(
 ): string {
   if (resourceType) {
     switch (resourceType) {
+      case "supabasedb":
+        return "Supabase DB"
       case "mysql":
         return "MySQL"
+      case "mssql":
+        return "Microsoft SQL"
       case "restapi":
         return "REST API"
       case "graphql":
@@ -67,8 +81,14 @@ export function getResourceNameFromResourceType(
         return "TiDB"
       case "smtp":
         return "SMTP"
+      case "huggingface":
+        return "Hugging face Inference API"
       case "s3":
         return "Amazon S3"
+      case "firebase":
+        return "Firebase"
+      case "clickhouse":
+        return "ClickHouse"
       default:
         return ""
     }

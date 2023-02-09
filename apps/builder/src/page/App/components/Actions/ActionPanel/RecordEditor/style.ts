@@ -20,16 +20,27 @@ export const recordStyle = css`
   flex-direction: row;
   align-items: center;
   min-height: 48px;
+  & > button {
+    color: ${globalColor(`--${illaPrefix}-grayBlue-05`)};
+    :hover {
+      color: ${globalColor(`--${illaPrefix}-grayBlue-02`)};
+      transition: color 200ms ease-in-out;
+    }
+  }
 `
 
 export const recordKeyStyle = css`
   min-width: 160px;
+  .cm-editor {
+    border-radius: 8px 0 0 8px;
+  }
 `
 
 export const recordValueStyle = css`
-  width: 0;
-  flex-grow: 1;
   margin-left: -1px;
+  .cm-editor {
+    border-radius: 0;
+  }
 `
 
 export const recordEditorLabelStyle = css`

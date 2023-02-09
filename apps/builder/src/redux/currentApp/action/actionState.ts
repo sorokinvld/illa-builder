@@ -1,3 +1,17 @@
+import {
+  FirebaseAction,
+  FirebaseContentType,
+} from "@/redux/currentApp/action/firebaseAction"
+import { GraphQLAction } from "@/redux/currentApp/action/graphqlAction"
+import {
+  HuggingFaceAction,
+  HuggingFaceBodyContent,
+} from "@/redux/currentApp/action/huggingFaceAction"
+import {
+  MicrosoftSqlAction,
+  MicrosoftSqlActionType,
+} from "@/redux/currentApp/action/microsoftSqlAction"
+import { MicrosoftSqlResource } from "@/redux/resource/microsoftSqlResource"
 import { ElasticSearchAction } from "./elasticSearchAction"
 import { MongoDbAction, MongoDbActionTypeContent } from "./mongoDbAction"
 import { MysqlLikeAction } from "./mysqlLikeAction"
@@ -39,7 +53,12 @@ export interface Events {
 }
 
 export type ActionType =
+  | "huggingface"
+  | "firebase"
+  | "supabasedb"
+  | "clickhouse"
   | "mysql"
+  | "mssql"
   | "restapi"
   | "graphql"
   | "mongodb"
@@ -70,13 +89,18 @@ export const actionItemInitial: Partial<ActionItem<ActionContent>> = {
 }
 
 export type ActionContent =
+  | HuggingFaceAction<HuggingFaceBodyContent>
+  | FirebaseAction<FirebaseContentType>
   | SMPTAction
   | S3Action<S3ActionTypeContent>
   | ElasticSearchAction
   | MysqlLikeAction
+  | MicrosoftSqlAction<MicrosoftSqlActionType>
+  | MicrosoftSqlResource
   | RestApiAction<BodyContent>
   | TransformerAction
   | RedisAction
+  | GraphQLAction
   | MongoDbAction<MongoDbActionTypeContent>
 
 export const actionInitialState: ActionItem<ActionContent>[] = []

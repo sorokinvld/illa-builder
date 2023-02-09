@@ -1,10 +1,12 @@
 import { createSelector } from "@reduxjs/toolkit"
+import { cloneDeep } from "lodash"
 import { getBuilderInfo } from "@/redux/builderInfo/builderInfoSelector"
 import { getActionList } from "@/redux/currentApp/action/actionSelector"
 import { getAllComponentDisplayNameMapProps } from "@/redux/currentApp/editor/components/componentsSelector"
 import { getCurrentUser } from "@/redux/currentUser/currentUserSelector"
 import { RootState } from "@/store"
 import { RawTreeFactory } from "@/utils/executionTreeHelper/rawTreeFactory"
+import { isObject } from "@/utils/typeHelper"
 
 export const getRawTree = createSelector(
   [
@@ -39,11 +41,13 @@ export const getExecutionDebuggerData = createSelector(
   [getExecution],
   (execution) => execution.debuggerData ?? {},
 )
-const IGNORE_WIDGET_TYPES = new Set<string>([
+export const IGNORE_WIDGET_TYPES = new Set<string>([
   "PAGE_NODE",
   "SECTION_NODE",
   "CANVAS",
   "DOT_PANEL",
+  "MODAL_WIDGET",
+  "MODAL_SECTION_NODE",
 ])
 
 export const getWidgetExecutionResult = createSelector(
@@ -60,12 +64,27 @@ export const getWidgetExecutionResult = createSelector(
   },
 )
 
-export const getWidgetExecutionResultArray = createSelector(
+export const getGeneralWidgetExecutionResultArray = createSelector(
   [getWidgetExecutionResult],
   (widgetExecutionResult) => {
     const widgetExecutionResultArray: Record<string, any>[] = []
     Object.keys(widgetExecutionResult).forEach((key) => {
       if (!IGNORE_WIDGET_TYPES.has(widgetExecutionResult[key].$widgetType)) {
+        widgetExecutionResultArray.push({
+          ...widgetExecutionResult[key],
+          displayName: key,
+        })
+      }
+    })
+    return widgetExecutionResultArray
+  },
+)
+export const getModalWidgetExecutionResultArray = createSelector(
+  [getWidgetExecutionResult],
+  (widgetExecutionResult) => {
+    const widgetExecutionResultArray: Record<string, any>[] = []
+    Object.keys(widgetExecutionResult).forEach((key) => {
+      if (widgetExecutionResult[key].$widgetType === "MODAL_WIDGET") {
         widgetExecutionResultArray.push({
           ...widgetExecutionResult[key],
           displayName: key,
@@ -160,6 +179,32 @@ export const getCurrentPageDisplayName = createSelector(
   [getRootNodeExecutionResult],
   (rootNode) => {
     const { pageSortedKey, currentPageIndex } = rootNode
+    if (currentPageIndex > pageSortedKey.lengths) return pageSortedKey[0]
     return pageSortedKey[currentPageIndex]
+  },
+)
+
+export const getExecutionResultToCodeMirror = createSelector(
+  [getExecutionResult],
+  (executionResult) => {
+    const result: Record<string, unknown> = {}
+    Object.keys(executionResult).forEach((key) => {
+      if (!IGNORE_WIDGET_TYPES.has(executionResult[key]?.$widgetType)) {
+        result[key] = cloneDeep(executionResult[key])
+      }
+    })
+    Object.keys(result).forEach((key) => {
+      const componentOrAction = result[key]
+      if (isObject(componentOrAction)) {
+        Object.keys(componentOrAction as Record<string, unknown>).forEach(
+          (key) => {
+            if (key.startsWith("$")) {
+              delete (componentOrAction as Record<string, unknown>)[key]
+            }
+          },
+        )
+      }
+    })
+    return result
   },
 )

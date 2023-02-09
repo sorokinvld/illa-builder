@@ -13,8 +13,8 @@ export const esItemStyle = css`
   padding: 0 16px;
 `
 
-export const topDivider = css`
-  min-height: 8px;
+export const actionItemContainer = css`
+  padding: 8px 0;
 `
 
 export const esItemLabelStyle = css`

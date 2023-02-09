@@ -1,6 +1,11 @@
 import { FC, useCallback, useMemo } from "react"
 import { useSelector } from "react-redux"
+import { ClickhouseConfigElement } from "@/page/App/components/Actions/ClickhouseConfigElement"
 import { ElasticSearchConfigElement } from "@/page/App/components/Actions/ElasticSearchConfigElement"
+import { FirebaseConfigElement } from "@/page/App/components/Actions/FirebaseConfigElement"
+import { GraphQLConfigElement } from "@/page/App/components/Actions/GraphQLConfigElement"
+import { HuggingFaceConfigElement } from "@/page/App/components/Actions/HuggingFaceConfigElement"
+import { MicrosoftSqlConfigElement } from "@/page/App/components/Actions/MicrosoftSqlConfigElement"
 import { MongoDbConfigElement } from "@/page/App/components/Actions/MongoDbConfigElement"
 import { MysqlLikeConfigElement } from "@/page/App/components/Actions/MysqlLikeConfigElement"
 import { RedisConfigElement } from "@/page/App/components/Actions/RedisConfigElement"
@@ -26,6 +31,7 @@ export const ResourceCreator: FC<ResourceCreatorProps> = (props) => {
       onFinished,
     }
     switch (finalResourceType) {
+      case "supabasedb":
       case "tidb":
       case "mariadb":
       case "mysql":
@@ -38,6 +44,8 @@ export const ResourceCreator: FC<ResourceCreatorProps> = (props) => {
             onFinished={onFinished}
           />
         )
+      case "mssql":
+        return <MicrosoftSqlConfigElement {...configElementProps} />
       case "restapi":
         return (
           <RestApiConfigElement
@@ -70,6 +78,16 @@ export const ResourceCreator: FC<ResourceCreatorProps> = (props) => {
             onFinished={onFinished}
           />
         )
+      case "firebase":
+        return (
+          <FirebaseConfigElement
+            resourceId={resourceId}
+            onBack={handleBack}
+            onFinished={onFinished}
+          />
+        )
+      case "graphql":
+        return <GraphQLConfigElement {...configElementProps} />
       case "s3":
         return (
           <S3ConfigElement
@@ -80,6 +98,10 @@ export const ResourceCreator: FC<ResourceCreatorProps> = (props) => {
         )
       case "smtp":
         return <SMTPConfigElement {...configElementProps} />
+      case "huggingface":
+        return <HuggingFaceConfigElement {...configElementProps} />
+      case "clickhouse":
+        return <ClickhouseConfigElement {...configElementProps} />
       default:
         return null
     }

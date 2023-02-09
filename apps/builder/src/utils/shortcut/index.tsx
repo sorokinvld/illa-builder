@@ -1,4 +1,3 @@
-import hotkeys from "hotkeys-js"
 import { FC, ReactNode, useCallback, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useTranslation } from "react-i18next"
@@ -12,6 +11,10 @@ import {
   isShowDot,
 } from "@/redux/config/configSelector"
 import { configActions } from "@/redux/config/configSlice"
+import {
+  clearComponentAttachedUsersHandler,
+  updateSelectedComponentUsersHandler,
+} from "@/redux/currentApp/collaborators/collaboratorsHandlers"
 import {
   flattenAllComponentNodeToMap,
   getCanvas,
@@ -111,6 +114,7 @@ export const Shortcut: FC<{ children: ReactNode }> = ({ children }) => {
             }),
           )
           dispatch(configActions.clearSelectedComponent())
+          clearComponentAttachedUsersHandler(displayName)
         },
       })
     }
@@ -195,6 +199,7 @@ export const Shortcut: FC<{ children: ReactNode }> = ({ children }) => {
             dispatch(
               configActions.updateSelectedComponent(childNodeDisplayNames),
             )
+            updateSelectedComponentUsersHandler(childNodeDisplayNames)
           }
         }
       }
@@ -272,7 +277,7 @@ export const Shortcut: FC<{ children: ReactNode }> = ({ children }) => {
   useHotkeys(
     "*",
     (keyboardEvent) => {
-      if (hotkeys.ctrl || hotkeys.command) {
+      if (keyboardEvent.key === "Meta" || keyboardEvent.key === "Ctrl") {
         if (keyboardEvent.type === "keydown") {
           dispatch(configActions.updateShowDot(true))
         } else if (keyboardEvent.type === "keyup") {

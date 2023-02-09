@@ -24,16 +24,16 @@ import {
 import { configActions } from "@/redux/config/configSlice"
 import { getActionList } from "@/redux/currentApp/action/actionSelector"
 import {
+  ActionContent,
+  ActionItem,
+} from "@/redux/currentApp/action/actionState"
+import {
   actionListEmptyStyle,
   addNewActionButtonStyle,
   listContainerStyle,
   listStyle,
   searchHeaderContainerStyle,
 } from "./style"
-import {
-  ActionContent,
-  ActionItem,
-} from "@/redux/currentApp/action/actionState"
 
 export interface ActionListProps extends HTMLAttributes<HTMLDivElement> {
   onChangeSelectedAction: () => void
@@ -117,6 +117,9 @@ export const ActionList: FC<ActionListProps> = (props) => {
                           ),
                           onOk: () => {
                             changeSelectedAction(action)
+                          },
+                          okButtonProps: {
+                            colorScheme: "red",
                           },
                         })
                       }

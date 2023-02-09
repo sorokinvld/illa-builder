@@ -16,6 +16,10 @@ export const Databases: ResourceDataItem[] = [
     isDraft: false,
   },
   {
+    resourceType: "mssql",
+    isDraft: false,
+  },
+  {
     resourceType: "mariadb",
     isDraft: false,
   },
@@ -35,6 +39,14 @@ export const Databases: ResourceDataItem[] = [
     resourceType: "elasticsearch",
     isDraft: false,
   },
+  {
+    resourceType: "supabasedb",
+    isDraft: false,
+  },
+  {
+    resourceType: "clickhouse",
+    isDraft: false,
+  },
 ]
 
 export const Apis: ResourceDataItem[] = [
@@ -47,12 +59,20 @@ export const Apis: ResourceDataItem[] = [
     isDraft: false,
   },
   {
-    resourceType: "smtp",
+    resourceType: "firebase",
     isDraft: false,
   },
   {
     resourceType: "graphql",
-    isDraft: true,
+    isDraft: false,
+  },
+  {
+    resourceType: "smtp",
+    isDraft: false,
+  },
+  {
+    resourceType: "huggingface",
+    isDraft: false,
   },
 ]
 

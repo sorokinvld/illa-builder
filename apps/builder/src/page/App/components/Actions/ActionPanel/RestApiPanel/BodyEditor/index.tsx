@@ -1,17 +1,21 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
 import { Select } from "@illa-design/react"
 import { CodeEditor } from "@/components/CodeEditor"
-import { EditorMode } from "@/components/CodeEditor/interface"
+import { CODE_LANG } from "@/components/CodeEditor/CodeMirror/extensions/interface"
 import { RecordEditor } from "@/page/App/components/Actions/ActionPanel/RecordEditor"
 import { BodyEditorProps } from "@/page/App/components/Actions/ActionPanel/RestApiPanel/BodyEditor/interface"
 import { getSelectedAction } from "@/redux/config/configSelector"
 import { configActions } from "@/redux/config/configSlice"
+import { ActionItem } from "@/redux/currentApp/action/actionState"
 import {
+  BodyContent,
+  BodyType,
   RawBody,
   RawBodyContent,
   RawBodyInitial,
+  RestApiAction,
 } from "@/redux/currentApp/action/restapiAction"
 import { Params } from "@/redux/resource/restapiResource"
 import { VALIDATION_TYPES } from "@/utils/validationFactory"
@@ -20,40 +24,83 @@ import {
   bodyEditorContainerStyle,
   bodyLabelStyle,
   bodySelectorStyle,
+  codeEditorStyle,
 } from "./style"
 
 export const BodyEditor: FC<BodyEditorProps> = (props) => {
   const { t } = useTranslation()
-  const selectedAction = useSelector(getSelectedAction)
 
   const actionItem = props.actionItem
-
   const bodyType = actionItem.content.bodyType
-
   const body = actionItem.content.body
 
+  const selectedAction = useSelector(getSelectedAction) as ActionItem<
+    RestApiAction<BodyContent>
+  >
   const dispatch = useDispatch()
 
-  let mode: EditorMode = "TEXT_JS"
+  let mode: CODE_LANG = CODE_LANG.JAVASCRIPT
   if (bodyType === "raw") {
     switch ((body as RawBody<RawBodyContent>).type) {
       case "text":
-        mode = "TEXT_JS"
+        mode = CODE_LANG.JAVASCRIPT
         break
       case "json":
-        mode = "JSON"
+        mode = CODE_LANG.JSON
         break
       case "xml":
-        mode = "XML_JS"
+        mode = CODE_LANG.XML
         break
       case "javascript":
-        mode = "JAVASCRIPT"
+        mode = CODE_LANG.JAVASCRIPT
         break
       case "html":
-        mode = "HTML_JS"
+        mode = CODE_LANG.HTML
         break
     }
   }
+
+  const handleActionTypeChange = useCallback(
+    (value: string) => {
+      let newBody = null
+      const content = selectedAction?.content as RestApiAction<BodyContent>
+      if (
+        selectedAction.resourceId === actionItem.resourceId &&
+        content.method !== "GET" &&
+        content.bodyType !== "none" &&
+        content.bodyType === value
+      ) {
+        newBody = content.body
+      } else {
+        switch (value) {
+          case "none":
+            newBody = null
+            break
+          case "x-www-form-urlencoded":
+          case "form-data":
+            newBody = [{ key: "", value: "" }] as Params[]
+            break
+          case "raw":
+            newBody = RawBodyInitial
+            break
+          case "binary":
+            newBody = ""
+            break
+        }
+      }
+      dispatch(
+        configActions.updateCachedAction({
+          ...actionItem,
+          content: {
+            ...actionItem.content,
+            bodyType: value as BodyType,
+            body: newBody,
+          },
+        }),
+      )
+    },
+    [actionItem, dispatch, selectedAction.content, selectedAction.resourceId],
+  )
 
   return (
     <div css={bodyEditorContainerStyle}>
@@ -73,45 +120,7 @@ export const BodyEditor: FC<BodyEditorProps> = (props) => {
               "binary",
             ]}
             bdRadius={bodyType === "raw" ? " 8px 0 0 8px" : "8px"}
-            onChange={(value) => {
-              let newBody = null
-
-              if (
-                selectedAction.resourceId === actionItem.resourceId &&
-                selectedAction.content.method !== "GET" &&
-                selectedAction.content.bodyType !== "none" &&
-                selectedAction.content.bodyType === value
-              ) {
-                newBody = selectedAction.content.body
-              } else {
-                switch (value) {
-                  case "none":
-                    newBody = null
-                    break
-                  case "x-www-form-urlencoded":
-                  case "form-data":
-                    newBody = [{ key: "", value: "" }] as Params[]
-                    break
-                  case "raw":
-                    newBody = RawBodyInitial
-                    break
-                  case "binary":
-                    newBody = ""
-                    break
-                }
-              }
-
-              dispatch(
-                configActions.updateCachedAction({
-                  ...actionItem,
-                  content: {
-                    ...actionItem.content,
-                    bodyType: value,
-                    body: newBody,
-                  },
-                }),
-              )
-            }}
+            onChange={handleActionTypeChange}
           />
           {bodyType === "raw" && (
             <Select
@@ -139,27 +148,29 @@ export const BodyEditor: FC<BodyEditorProps> = (props) => {
           )}
         </div>
         {bodyType === "raw" && (
-          <CodeEditor
-            lineNumbers
-            mode={mode}
-            value={(body as RawBody<RawBodyContent>).content}
-            expectedType={VALIDATION_TYPES.STRING}
-            height="88px"
-            onChange={(value) => {
-              dispatch(
-                configActions.updateCachedAction({
-                  ...actionItem,
-                  content: {
-                    ...actionItem.content,
-                    body: {
-                      ...(body as RawBody<RawBodyContent>),
-                      content: value,
+          <div css={codeEditorStyle}>
+            <CodeEditor
+              showLineNumbers
+              lang={mode}
+              value={(body as RawBody<RawBodyContent>).content}
+              expectValueType={VALIDATION_TYPES.STRING}
+              height="88px"
+              onChange={(value) => {
+                dispatch(
+                  configActions.updateCachedAction({
+                    ...actionItem,
+                    content: {
+                      ...actionItem.content,
+                      body: {
+                        ...(body as RawBody<RawBodyContent>),
+                        content: value,
+                      },
                     },
-                  },
-                }),
-              )
-            }}
-          />
+                  }),
+                )
+              }}
+            />
+          </div>
         )}
         {(bodyType === "form-data" || bodyType === "x-www-form-urlencoded") && (
           <RecordEditor
@@ -222,24 +233,26 @@ export const BodyEditor: FC<BodyEditorProps> = (props) => {
           />
         )}
         {bodyType === "binary" && (
-          <CodeEditor
-            mode="TEXT_JS"
-            lineNumbers
-            value={(body as string) ?? ""}
-            expectedType={VALIDATION_TYPES.STRING}
-            height="88px"
-            onChange={(value) => {
-              dispatch(
-                configActions.updateCachedAction({
-                  ...actionItem,
-                  content: {
-                    ...actionItem.content,
-                    body: value,
-                  },
-                }),
-              )
-            }}
-          />
+          <div css={codeEditorStyle}>
+            <CodeEditor
+              lang={CODE_LANG.JAVASCRIPT}
+              showLineNumbers
+              value={(body as string) ?? ""}
+              expectValueType={VALIDATION_TYPES.STRING}
+              height="88px"
+              onChange={(value) => {
+                dispatch(
+                  configActions.updateCachedAction({
+                    ...actionItem,
+                    content: {
+                      ...actionItem.content,
+                      body: value,
+                    },
+                  }),
+                )
+              }}
+            />
+          </div>
         )}
       </div>
     </div>

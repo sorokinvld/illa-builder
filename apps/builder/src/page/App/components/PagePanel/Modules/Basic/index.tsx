@@ -5,6 +5,7 @@ import { Input, Switch } from "@illa-design/react"
 import { PanelBar } from "@/components/PanelBar"
 import { PageLabel } from "@/page/App/components/PagePanel/Components/Label"
 import { ViewList } from "@/page/App/components/PagePanel/Components/ViewsList"
+import { PanelDivider } from "@/page/App/components/PagePanel/Layout/divider"
 import { LeftAndRightLayout } from "@/page/App/components/PagePanel/Layout/leftAndRight"
 import { SetterPadding } from "@/page/App/components/PagePanel/Layout/setterPadding"
 import {
@@ -122,11 +123,13 @@ export const PageBasic: FC = () => {
             onChange={(value) => {
               handleChangeDefaultView(value, "bodySection")
             }}
+            borderColor="techPurple"
           />
         </SetterPadding>
       </LeftAndRightLayout>
       {hasLeft && (
         <>
+          <PanelDivider />
           <LeftAndRightLayout>
             <PageLabel
               labelName={t("editor.page.label_name.left_panel")}
@@ -149,6 +152,7 @@ export const PageBasic: FC = () => {
                 onChange={(value) => {
                   handleChangeDefaultView(value, "leftSection")
                 }}
+                borderColor="techPurple"
               />
             </SetterPadding>
           </LeftAndRightLayout>
@@ -156,6 +160,7 @@ export const PageBasic: FC = () => {
       )}
       {hasRight && (
         <>
+          <PanelDivider />
           <LeftAndRightLayout>
             <PageLabel
               labelName={t("editor.page.label_name.right_panel")}
@@ -178,6 +183,7 @@ export const PageBasic: FC = () => {
                 onChange={(value) => {
                   handleChangeDefaultView(value, "rightSection")
                 }}
+                borderColor="techPurple"
               />
             </SetterPadding>
           </LeftAndRightLayout>
@@ -185,6 +191,7 @@ export const PageBasic: FC = () => {
       )}
       {hasHeader && (
         <>
+          <PanelDivider />
           <LeftAndRightLayout>
             <PageLabel
               labelName={t("editor.page.label_name.header")}
@@ -207,6 +214,7 @@ export const PageBasic: FC = () => {
                 onChange={(value) => {
                   handleChangeDefaultView(value, "headerSection")
                 }}
+                borderColor="techPurple"
               />
             </SetterPadding>
           </LeftAndRightLayout>
@@ -214,6 +222,7 @@ export const PageBasic: FC = () => {
       )}
       {hasFooter && (
         <>
+          <PanelDivider />
           <LeftAndRightLayout>
             <PageLabel
               labelName={t("editor.page.label_name.footer")}
@@ -236,6 +245,7 @@ export const PageBasic: FC = () => {
                 onChange={(value) => {
                   handleChangeDefaultView(value, "footerSection")
                 }}
+                borderColor="techPurple"
               />
             </SetterPadding>
           </LeftAndRightLayout>

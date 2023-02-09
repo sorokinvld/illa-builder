@@ -6,6 +6,7 @@ export function applyRecordEditorContainerStyle(label: string) {
     display: flex;
     padding-right: ${label !== "" ? "24px" : "0"};
     flex-direction: row;
+    padding-left: 24px;
   `
 }
 export const recordEditorStyle = css`
@@ -19,6 +20,13 @@ export const recordStyle = css`
   flex-direction: row;
   align-items: center;
   min-height: 48px;
+  & > button {
+    color: ${globalColor(`--${illaPrefix}-grayBlue-05`)};
+    :hover {
+      color: ${globalColor(`--${illaPrefix}-grayBlue-02`)};
+      transition: color 200ms ease-in-out;
+    }
+  }
 `
 
 export const recordEditorLabelStyle = css`

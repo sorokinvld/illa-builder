@@ -16,6 +16,10 @@ export const Databases: ActionDataItem[] = [
     isDraft: false,
   },
   {
+    actionType: "mssql",
+    isDraft: false,
+  },
+  {
     actionType: "mariadb",
     isDraft: false,
   },
@@ -35,6 +39,14 @@ export const Databases: ActionDataItem[] = [
     actionType: "elasticsearch",
     isDraft: false,
   },
+  {
+    actionType: "supabasedb",
+    isDraft: false,
+  },
+  {
+    actionType: "clickhouse",
+    isDraft: false,
+  },
 ]
 
 export const Apis: ActionDataItem[] = [
@@ -47,12 +59,20 @@ export const Apis: ActionDataItem[] = [
     isDraft: false,
   },
   {
-    actionType: "smtp",
+    actionType: "firebase",
     isDraft: false,
   },
   {
     actionType: "graphql",
-    isDraft: true,
+    isDraft: false,
+  },
+  {
+    actionType: "smtp",
+    isDraft: false,
+  },
+  {
+    actionType: "huggingface",
+    isDraft: false,
   },
 ]
 

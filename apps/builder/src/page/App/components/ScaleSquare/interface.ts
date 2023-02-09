@@ -1,4 +1,5 @@
 import { HTMLAttributes } from "react"
+import { CollaboratorsInfo } from "@/redux/currentApp/collaborators/collaboratorsState"
 import { ComponentNode } from "@/redux/currentApp/editor/components/componentsState"
 
 export type ScaleSquareType = "error" | "normal" | "production"
@@ -15,7 +16,7 @@ export interface ScaleSquareProps extends HTMLAttributes<HTMLDivElement> {
   containerPadding: number
   childrenNode: ComponentNode[]
   collisionEffect: Map<string, ComponentNode>
-  columnsNumber: number
+  blockColumns: number
 }
 
 export interface ScaleSquarePropsWithJSON {
@@ -26,6 +27,7 @@ export interface ScaleSquarePropsWithJSON {
   y: number
   unitW: number
   unitH: number
+  blockColumns: number
 }
 
 export interface MoveBarProps {
@@ -39,6 +41,7 @@ export interface MoveBarProps {
   containerHeight: number
   containerPadding: number
   widgetType: string
+  userList: CollaboratorsInfo[]
 }
 
 export interface MoveBarPositionShape {

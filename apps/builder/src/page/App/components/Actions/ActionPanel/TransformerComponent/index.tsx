@@ -4,9 +4,16 @@ import { useDispatch, useSelector } from "react-redux"
 import { RadioGroup } from "@illa-design/react"
 import { CodeEditor } from "@/components/CodeEditor"
 import {
+  CODE_LANG,
+  CODE_TYPE,
+} from "@/components/CodeEditor/CodeMirror/extensions/interface"
+import { TransformComponentProps } from "@/page/App/components/Actions/ActionPanel/TransformerComponent/interface"
+import {
   codeMirrorStyle,
+  getCodeMirrorContainerStyle,
   transformRadioStyle,
   transformSpaceStyle,
+  transformTitle,
   transformTitleStyle,
 } from "@/page/App/components/Actions/ActionPanel/TransformerComponent/style"
 import { PanelLabel } from "@/page/App/components/InspectPanel/label"
@@ -20,13 +27,13 @@ import {
   TransformerInitial,
   TransformerInitialTrue,
 } from "@/redux/currentApp/action/actionState"
-import { TransformerAction } from "@/redux/currentApp/action/transformerAction"
 import { VALIDATION_TYPES } from "@/utils/validationFactory"
 
-export const TransformerComponent: FC = () => {
+export const TransformerComponent: FC<TransformComponentProps> = (props) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
 
+  const { mysqlLike } = props
   const cachedAction = useSelector(getCachedAction)
   const selectedAction = useSelector(getSelectedAction)
 
@@ -34,7 +41,15 @@ export const TransformerComponent: FC = () => {
     <>
       {cachedAction && (
         <div css={transformTitleStyle}>
-          <PanelLabel labelName={t("editor.action.panel.label.transformer")} />
+          {mysqlLike ? (
+            <PanelLabel
+              labelName={t("editor.action.panel.label.transformer")}
+            />
+          ) : (
+            <span css={transformTitle}>
+              {t("editor.action.panel.label.transformer")}
+            </span>
+          )}
           <div css={transformSpaceStyle} />
           <RadioGroup
             css={transformRadioStyle}
@@ -54,8 +69,11 @@ export const TransformerComponent: FC = () => {
             ]}
             onChange={(value) => {
               let transformer: Transformer = TransformerInitial
-              if (selectedAction.transformer.enable === value) {
-                transformer = selectedAction.transformer
+              if (
+                selectedAction &&
+                selectedAction.transformer.enable === value
+              ) {
+                transformer = selectedAction.transformer || ""
               } else {
                 if (value) {
                   transformer = TransformerInitialTrue
@@ -72,25 +90,29 @@ export const TransformerComponent: FC = () => {
         </div>
       )}
       {cachedAction && cachedAction.transformer.enable && (
-        <CodeEditor
-          value={cachedAction.transformer.rawData}
-          css={codeMirrorStyle}
-          lineNumbers
-          height="88px"
-          expectedType={VALIDATION_TYPES.STRING}
-          mode="JAVASCRIPT"
-          onChange={(value) => {
-            dispatch(
-              configActions.updateCachedAction({
-                ...cachedAction,
-                transformer: {
-                  ...cachedAction.transformer,
-                  rawData: value,
-                },
-              }),
-            )
-          }}
-        />
+        <div css={getCodeMirrorContainerStyle(!!mysqlLike)}>
+          {mysqlLike ? null : <span css={transformTitle}></span>}
+          <CodeEditor
+            value={cachedAction.transformer.rawData}
+            wrapperCss={codeMirrorStyle}
+            showLineNumbers
+            height="88px"
+            expectValueType={VALIDATION_TYPES.STRING}
+            lang={CODE_LANG.JAVASCRIPT}
+            codeType={CODE_TYPE.FUNCTION}
+            onChange={(value) => {
+              dispatch(
+                configActions.updateCachedAction({
+                  ...cachedAction,
+                  transformer: {
+                    ...cachedAction.transformer,
+                    rawData: value,
+                  },
+                }),
+              )
+            }}
+          />
+        </div>
       )}
     </>
   )

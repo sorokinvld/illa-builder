@@ -168,14 +168,14 @@ export const transformEvents = (
     if (widgetMethod === "showNextView") {
       const { showNextViewLoopBack } = event
       return {
-        script: `{{${widgetID}.${widgetMethod}(${showNextViewLoopBack})}}`,
+        script: `{{${widgetID}.${widgetMethod}(${!!showNextViewLoopBack})}}`,
         enabled,
       }
     }
     if (widgetMethod === "showPreviousView") {
       const { showPreviousViewLoopBack } = event
       return {
-        script: `{{${widgetID}.${widgetMethod}(${showPreviousViewLoopBack})}}`,
+        script: `{{${widgetID}.${widgetMethod}(${!!showPreviousViewLoopBack})}}`,
         enabled,
       }
     }
@@ -183,7 +183,7 @@ export const transformEvents = (
     if (widgetMethod === "showNextVisibleView") {
       const { showNextVisibleViewLoopBack } = event
       return {
-        script: `{{${widgetID}.${widgetMethod}(${showNextVisibleViewLoopBack})}}`,
+        script: `{{${widgetID}.${widgetMethod}(${!!showNextVisibleViewLoopBack})}}`,
         enabled,
       }
     }
@@ -191,7 +191,7 @@ export const transformEvents = (
     if (widgetMethod === "showPreviousVisibleView") {
       const { showPreviousVisibleViewLoopBack } = event
       return {
-        script: `{{${widgetID}.${widgetMethod}(${showPreviousVisibleViewLoopBack})}}`,
+        script: `{{${widgetID}.${widgetMethod}(${!!showPreviousVisibleViewLoopBack})}}`,
         enabled,
       }
     }
@@ -204,6 +204,20 @@ export const transformEvents = (
     if (widgetMethod === "validate") {
       return {
         script: `{{${widgetID}.${widgetMethod}()}}`,
+        enabled,
+      }
+    }
+
+    if (widgetMethod === "openModal" || widgetMethod === "closeModal") {
+      return {
+        script: () => {
+          store.dispatch(
+            executionActions.updateModalDisplayReducer({
+              display: widgetMethod === "openModal",
+              displayName: widgetID,
+            }),
+          )
+        },
         enabled,
       }
     }

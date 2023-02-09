@@ -8,6 +8,7 @@ import {
   illaPrefix,
 } from "@illa-design/react"
 import { CodeEditor } from "@/components/CodeEditor"
+import { CODE_LANG } from "@/components/CodeEditor/CodeMirror/extensions/interface"
 import { RecordEditorProps } from "@/page/App/components/Actions/ActionPanel/RecordEditor/interface"
 import { VALIDATION_TYPES } from "@/utils/validationFactory"
 import {
@@ -20,7 +21,16 @@ import {
 } from "./style"
 
 export const RecordEditor: FC<RecordEditorProps> = (props) => {
-  const { records, label, onDelete, onAdd, onChangeKey, onChangeValue } = props
+  const {
+    name,
+    records,
+    customRender,
+    label,
+    onDelete,
+    onAdd,
+    onChangeKey,
+    onChangeValue,
+  } = props
 
   const { t } = useTranslation()
 
@@ -28,52 +38,65 @@ export const RecordEditor: FC<RecordEditorProps> = (props) => {
     return (
       <>
         {records?.map((record, index) => {
+          if (customRender) {
+            return (
+              <div css={recordStyle} key={index}>
+                {customRender(record, index)}
+                <Button
+                  ml="-1px"
+                  minW="32px"
+                  variant="outline"
+                  bdRadius="0 8px 8px 0"
+                  colorScheme="grayBlue"
+                  onClick={() => {
+                    onDelete(index, record, name)
+                  }}
+                  leftIcon={<DeleteIcon />}
+                />
+              </div>
+            )
+          }
           return (
             <div css={recordStyle} key={index}>
               <CodeEditor
-                css={recordKeyStyle}
+                wrapperCss={recordKeyStyle}
                 height="32px"
                 value={record.key}
-                mode="TEXT_JS"
+                lang={CODE_LANG.JAVASCRIPT}
                 placeholder="key"
-                borderRadius="8px 0 0 8px"
-                expectedType={VALIDATION_TYPES.STRING}
+                expectValueType={VALIDATION_TYPES.STRING}
                 onChange={(value) => {
-                  onChangeKey(index, value, record.value)
+                  onChangeKey(index, value, record.value, name)
                 }}
               />
               <CodeEditor
-                css={recordValueStyle}
                 height="32px"
-                mode="TEXT_JS"
+                wrapperCss={recordValueStyle}
+                lang={CODE_LANG.JAVASCRIPT}
                 placeholder="value"
                 value={record.value}
-                borderRadius="0 0 0 0"
-                expectedType={VALIDATION_TYPES.STRING}
+                expectValueType={VALIDATION_TYPES.STRING}
                 onChange={(value) => {
-                  onChangeValue(index, record.key, value)
+                  onChangeValue(index, record.key, value, name)
                 }}
               />
               <Button
                 ml="-1px"
+                minW="32px"
                 variant="outline"
                 bdRadius="0 8px 8px 0"
                 colorScheme="grayBlue"
                 onClick={() => {
-                  onDelete(index, record)
+                  onDelete(index, record, name)
                 }}
-                leftIcon={
-                  <DeleteIcon
-                    color={globalColor(`--${illaPrefix}-grayBlue-08`)}
-                  />
-                }
+                leftIcon={<DeleteIcon />}
               />
             </div>
           )
         })}
       </>
     )
-  }, [onChangeKey, onChangeValue, onDelete, records])
+  }, [customRender, name, onChangeKey, onChangeValue, onDelete, records])
 
   return (
     <div css={applyRecordEditorContainerStyle(label)}>
@@ -88,7 +111,7 @@ export const RecordEditor: FC<RecordEditorProps> = (props) => {
             size="medium"
             variant="text"
             onClick={() => {
-              onAdd()
+              onAdd(name)
             }}
             leftIcon={
               <AddIcon color={globalColor(`--${illaPrefix}-techPurple-08`)} />

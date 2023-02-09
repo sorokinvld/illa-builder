@@ -10,6 +10,10 @@ export const topDivider = css`
   min-height: 8px;
 `
 
+export const actionItemContainer = css`
+  padding: 8px 0;
+`
+
 export const restapiItemStyle = css`
   display: flex;
   flex-direction: row;
@@ -30,4 +34,7 @@ export const restapiItemInputStyle = css`
   flex-grow: 1;
   width: 0;
   margin-left: -1px;
+  .cm-editor {
+    border-radius: 0 8px 8px 0;
+  }
 `

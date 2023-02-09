@@ -1,6 +1,11 @@
 import { FC, ReactNode, useCallback, useMemo } from "react"
 import { useSelector } from "react-redux"
+import { ClickhouseConfigElement } from "@/page/App/components/Actions/ClickhouseConfigElement"
 import { ElasticSearchConfigElement } from "@/page/App/components/Actions/ElasticSearchConfigElement"
+import { FirebaseConfigElement } from "@/page/App/components/Actions/FirebaseConfigElement"
+import { GraphQLConfigElement } from "@/page/App/components/Actions/GraphQLConfigElement"
+import { HuggingFaceConfigElement } from "@/page/App/components/Actions/HuggingFaceConfigElement"
+import { MicrosoftSqlConfigElement } from "@/page/App/components/Actions/MicrosoftSqlConfigElement"
 import { MongoDbConfigElement } from "@/page/App/components/Actions/MongoDbConfigElement"
 import { MysqlLikeConfigElement } from "@/page/App/components/Actions/MysqlLikeConfigElement"
 import { RedisConfigElement } from "@/page/App/components/Actions/RedisConfigElement"
@@ -29,7 +34,18 @@ export const ActionResourceCreator: FC<ResourceEditorProps> = (props) => {
   }, [onBack, resourceList.length])
 
   let renderElement: ReactNode | null = useMemo(() => {
+    const generalProps = {
+      onBack: handleBack,
+      onFinished,
+    }
     switch (resourceType) {
+      case "firebase":
+        return <FirebaseConfigElement {...generalProps} />
+      case "clickhouse":
+        return <ClickhouseConfigElement {...generalProps} />
+      case "graphql":
+        return <GraphQLConfigElement {...generalProps} />
+      case "supabasedb":
       case "tidb":
       case "mariadb":
       case "mysql":
@@ -41,6 +57,8 @@ export const ActionResourceCreator: FC<ResourceEditorProps> = (props) => {
             onFinished={onFinished}
           />
         )
+      case "mssql":
+        return <MicrosoftSqlConfigElement {...generalProps} />
       case "restapi":
         return (
           <RestApiConfigElement onBack={handleBack} onFinished={onFinished} />
@@ -64,6 +82,8 @@ export const ActionResourceCreator: FC<ResourceEditorProps> = (props) => {
         )
       case "smtp":
         return <SMTPConfigElement onBack={handleBack} onFinished={onFinished} />
+      case "huggingface":
+        return <HuggingFaceConfigElement {...generalProps} />
       default:
         return null
     }

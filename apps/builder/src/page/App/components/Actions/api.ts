@@ -9,11 +9,13 @@ import {
   ActionItem,
 } from "@/redux/currentApp/action/actionState"
 import { getAppId } from "@/redux/currentApp/appInfo/appInfoSelector"
+import { GraphQLAuth, GraphQLAuthValue } from "@/redux/resource/graphqlResource"
 import { resourceActions } from "@/redux/resource/resourceSlice"
 import {
   Resource,
   ResourceContent,
   ResourceType,
+  generateSSLConfig,
 } from "@/redux/resource/resourceState"
 import store from "@/store"
 import { DisplayNameGenerator } from "@/utils/generators/generateDisplayName"
@@ -80,7 +82,7 @@ export function onDeleteActionItem(action: ActionItem<ActionContent>) {
     },
     () => {
       message.error({
-        content: i18n.t("editor.action.action_list.message.failed_to_delete"),
+        content: i18n.t("editor.action.action_list.message.failed"),
       })
     },
     () => {},
@@ -88,8 +90,44 @@ export function onDeleteActionItem(action: ActionItem<ActionContent>) {
   )
 }
 
+export function generateGraphQLAuthContent(data: {
+  [p: string]: any
+}): GraphQLAuth | null {
+  let authContent: GraphQLAuth | null = null
+  switch (data.authentication) {
+    case GraphQLAuthValue.BASIC:
+      authContent = {
+        username: data.username,
+        password: data.password,
+      }
+      break
+    case GraphQLAuthValue.BEARER:
+      authContent = {
+        bearerToken: data.bearerToken,
+      }
+      break
+    case GraphQLAuthValue.APIKEY:
+      authContent = {
+        key: data.key,
+        value: data.value,
+        addTo: data.addTo,
+        headerPrefix: data.headerPrefix,
+      }
+      break
+    default:
+      break
+  }
+  return authContent
+}
+
 function getActionContentByType(data: FieldValues, type: ResourceType) {
   switch (type) {
+    case "firebase":
+      return {
+        databaseUrl: data.databaseUrl,
+        projectID: data.projectID,
+        privateKey: JSON.parse(data.privateKey),
+      }
     case "elasticsearch":
       return {
         host: data.host,
@@ -113,6 +151,39 @@ function getActionContentByType(data: FieldValues, type: ResourceType) {
         username: data.username,
         password: data.password,
       }
+    case "clickhouse":
+      return {
+        host: data.host,
+        port: +data.port,
+        username: data.username,
+        password: data.password,
+        databaseName: data.databaseName,
+        ssl: generateSSLConfig(!!data.ssl, data, "clickhouse"),
+      }
+    case "graphql":
+      return {
+        baseUrl: data.baseUrl,
+        urlParams: data.urlParams,
+        headers: data.headers,
+        cookies: data.cookies,
+        authentication: data.authentication,
+        disableIntrospection: data.disableIntrospection,
+        authContent: generateGraphQLAuthContent(data),
+      }
+    case "mssql":
+      return {
+        host: data.host,
+        port: data.port.toString(),
+        databaseName: data.databaseName,
+        username: data.username,
+        password: data.password,
+        connectionOpts: data.connectionOpts,
+        ssl: generateSSLConfig(!!data.ssl, data, "mssql"),
+      }
+    case "huggingface":
+      return {
+        token: data.token,
+      }
   }
 }
 
@@ -128,6 +199,15 @@ export function onActionConfigElementSubmit(
     resourceId != undefined ? `/resources/${resourceId}` : `/resources`
 
   return handleSubmit((data: FieldValues) => {
+    let content
+    try {
+      content = getActionContentByType(data, resourceType)
+    } catch (e) {
+      message.error({
+        content: i18n.t("editor.action.resource.db.invalid_private.key"),
+      })
+      return
+    }
     Api.request<Resource<ResourceContent>>(
       {
         method,
@@ -136,7 +216,7 @@ export function onActionConfigElementSubmit(
           ...(resourceId !== undefined && { resourceId: data.resourceId }),
           resourceName: data.resourceName,
           resourceType: resourceType,
-          content: getActionContentByType(data, resourceType),
+          content,
         },
       },
       (response) => {
