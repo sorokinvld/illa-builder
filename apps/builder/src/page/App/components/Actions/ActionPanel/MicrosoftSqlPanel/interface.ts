@@ -2,6 +2,6 @@ import { MicrosoftSqlActionType } from "@/redux/currentApp/action/microsoftSqlAc
 
 export interface MSSQLModeProps {
   modeContent: MicrosoftSqlActionType
-  onChange: (value: string, name: string) => void
+  onChange: (name: string, value: string) => void
   resourceId?: string
 }

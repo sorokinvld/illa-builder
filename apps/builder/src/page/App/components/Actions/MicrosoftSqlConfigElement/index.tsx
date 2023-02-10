@@ -6,7 +6,7 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  PaginationPreIcon,
+  PreviousIcon,
   WarningCircleIcon,
   getColor,
 } from "@illa-design/react"
@@ -326,7 +326,7 @@ export const MicrosoftSqlConfigElement: FC<MicrosoftSqlConfigElementProps> = (
       </div>
       <div css={footerStyle}>
         <Button
-          leftIcon={<PaginationPreIcon />}
+          leftIcon={<PreviousIcon />}
           variant="text"
           colorScheme="gray"
           type="button"

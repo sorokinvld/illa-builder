@@ -47,9 +47,9 @@ export const MSSQLGUIMode: FC<MSSQLModeProps> = (props) => {
           defaultValue={newModeContent.table}
           value={newModeContent.table}
           ml="16px"
-          width="100%"
+          w="100%"
           placeholder={"Select a table"}
-          onChange={(value: string) => onChange(value, "table")}
+          onChange={(value) => onChange("table", (value || "") as string)}
           options={collectionSelect}
         />
       </div>

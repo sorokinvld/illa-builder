@@ -14,7 +14,7 @@ export const MSSQLSqlMode: FC<MSSQLModeProps> = (props) => {
         placeholder={"select * from users;"}
         lineNumbers={true}
         value={(modeContent as MicrosoftSqlActionSqlMode).sql}
-        onChange={(value) => onChange(value, "sql")}
+        onChange={(value) => onChange("sql", (value || "") as string)}
       />
     </>
   )
