@@ -198,14 +198,14 @@ export const UploadWidget: FC<UploadWidgetProps> = (props) => {
       const shownList = currentList.map((file, index) => {
         const base64 = value[index]
         const info = files[index]
+
         return {
           ...file,
-          originFile: dataURLtoFile(
-            `data:${info.type};base64,${base64}`,
-            info.name,
-          ),
-        } as UploadItem
-      })
+          originFile: !base64
+            ? new File([""], info.name, info)
+            : dataURLtoFile(`data:${info.type};base64,${base64}`, info.name),
+        }
+      }) as UploadItem[]
       setFileList(shownList)
       fileListRef.current = shownList
     }
@@ -389,9 +389,9 @@ export const UploadWidget: FC<UploadWidgetProps> = (props) => {
   ])
 
   return (
-    <div css={uploadContainerStyle}>
+    <div css={uploadContainerStyle} ref={containerRef}>
       <TooltipWrapper tooltipText={tooltipText} tooltipDisabled={!tooltipText}>
-        <div css={uploadLayoutStyle} ref={containerRef}>
+        <div css={uploadLayoutStyle}>
           <WrappedUpload
             {...props}
             fileList={currentFileList}
