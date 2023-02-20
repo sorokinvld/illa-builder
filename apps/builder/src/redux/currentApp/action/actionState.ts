@@ -1,4 +1,8 @@
 import {
+  DynamoDBAction,
+  StructParams,
+} from "@/redux/currentApp/action/dynamoDBAction"
+import {
   FirebaseAction,
   FirebaseContentType,
 } from "@/redux/currentApp/action/firebaseAction"
@@ -63,6 +67,7 @@ export type ActionType =
   | "mongodb"
   | "redis"
   | "elasticsearch"
+  | "dynamodb"
   | "snowflake"
   | "postgresql"
   | "mariadb"
@@ -94,6 +99,7 @@ export type ActionContent =
   | SMPTAction
   | S3Action<S3ActionTypeContent>
   | ElasticSearchAction
+  | DynamoDBAction<StructParams>
   | MysqlLikeAction
   | MicrosoftSqlAction<MicrosoftSqlActionType>
   | RestApiAction<BodyContent>
