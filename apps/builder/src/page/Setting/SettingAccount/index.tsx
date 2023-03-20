@@ -135,7 +135,7 @@ export const SettingAccount: FC = () => {
                   dispatch(
                     currentUserActions.updateCurrentUserReducer({
                       ...response.data,
-                      userId: response.data.id,
+                      userId: response.data.userID,
                     }),
                   )
                   message.success({

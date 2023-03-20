@@ -35,7 +35,7 @@ const UserLogin: FC = () => {
         setLocalStorage("token", token, -1)
         dispatch(
           currentUserActions.updateCurrentUserReducer({
-            userId: res.data.id,
+            userId: res.data.userID,
             nickname: res.data.nickname,
             language: res.data.language || "en-US",
             email: res.data.email,

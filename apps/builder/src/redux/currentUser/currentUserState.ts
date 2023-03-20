@@ -7,7 +7,7 @@ export interface CurrentUser {
 }
 
 export interface UserInfoResponse {
-  id: string
+  userID: string
   uid: string
   nickname: string
   email: string
