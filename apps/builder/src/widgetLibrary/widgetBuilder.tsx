@@ -160,6 +160,12 @@ import {
   SelectWidget,
 } from "@/widgetLibrary/SelectWidget"
 import {
+  SLIDER_EVENT_HANDLER_CONFIG,
+  SLIDER_PANEL_CONFIG,
+  SLIDER_WIDGET_CONFIG,
+  SliderWidget,
+} from "@/widgetLibrary/SliderWidget"
+import {
   STATISTICS_EVENT_HANDLER_CONFIG,
   STATISTICS_PANEL_CONFIG,
   STATISTICS_WIDGET_CONFIG,
@@ -430,6 +436,12 @@ export const WidgetConfig: WidgetConfigs = {
     config: CAROUSEL_WIDGET_CONFIG,
     panelConfig: CAROUSEL_PANEL_CONFIG,
     eventHandlerConfig: CAROUSEL_EVENT_HANDLER_CONFIG,
+  },
+  SLIDER_WIDGET: {
+    widget: SliderWidget,
+    config: SLIDER_WIDGET_CONFIG,
+    panelConfig: SLIDER_PANEL_CONFIG,
+    eventHandlerConfig: SLIDER_EVENT_HANDLER_CONFIG,
   },
 }
 
