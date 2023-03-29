@@ -1070,6 +1070,7 @@ importers:
       '@illa-design/result': workspace:*
       '@illa-design/select': workspace:*
       '@illa-design/skeleton': workspace:*
+      '@illa-design/slider': workspace:*
       '@illa-design/space': workspace:*
       '@illa-design/spin': workspace:*
       '@illa-design/statistic': workspace:*
@@ -1130,6 +1131,7 @@ importers:
       '@illa-design/result': link:../result
       '@illa-design/select': link:../select
       '@illa-design/skeleton': link:../skeleton
+      '@illa-design/slider': link:../slider
       '@illa-design/space': link:../space
       '@illa-design/spin': link:../spin
       '@illa-design/statistic': link:../statistic
@@ -1202,6 +1204,27 @@ importers:
     dependencies:
       '@illa-design/system': link:../system
       '@illa-design/theme': link:../theme
+    devDependencies:
+      '@rollup/plugin-typescript': 10.0.1
+      '@vitejs/plugin-react-swc': 3.1.0
+
+  illa-design/packages/slider:
+    specifiers:
+      '@illa-design/icon': workspace:*
+      '@illa-design/system': workspace:*
+      '@illa-design/theme': workspace:*
+      '@illa-design/trigger': workspace:*
+      '@rollup/plugin-typescript': ^10.0.1
+      '@vitejs/plugin-react-swc': ^3.0.1
+      framer-motion: ^7.6.12
+      react-use-measure: ^2.1.1
+    dependencies:
+      '@illa-design/icon': link:../icon
+      '@illa-design/system': link:../system
+      '@illa-design/theme': link:../theme
+      '@illa-design/trigger': link:../trigger
+      framer-motion: 7.10.3
+      react-use-measure: 2.1.1
     devDependencies:
       '@rollup/plugin-typescript': 10.0.1
       '@vitejs/plugin-react-swc': 3.1.0
