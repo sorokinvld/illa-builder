@@ -252,6 +252,8 @@ export const transformEvents = (
         "seekTo",
         "showControls",
         "mute",
+        "setStartOfRange",
+        "setEndOfRange",
       ].includes(widgetMethod)
     ) {
       const { widgetTargetValue } = event

@@ -4,12 +4,14 @@ import LabelProps from "@/widgetLibrary/PublicSector/Label/interface"
 import { TooltipWrapperProps } from "@/widgetLibrary/PublicSector/TooltipWrapper/interface"
 import { BaseWidgetProps } from "@/widgetLibrary/interface"
 
-export interface WrappedSliderProps
+export interface WrappedRangeSliderProps
   extends Omit<ValidateMessageOldProps, "value">,
     Pick<
       SliderProps,
       "value" | "min" | "max" | "step" | "disabled" | "colorScheme" | "isFocus"
     > {
+  startValue: number
+  endValue: number
   hideOutput: boolean
   displayName: string
   validateMessage: string
@@ -30,8 +32,8 @@ export interface WrappedSliderProps
   handleOnFocus?: () => void
 }
 
-export interface SliderWidgetProps
-  extends WrappedSliderProps,
+export interface RangeSliderWidgetProps
+  extends WrappedRangeSliderProps,
     BaseWidgetProps,
     LabelProps,
     Omit<TooltipWrapperProps, "children"> {

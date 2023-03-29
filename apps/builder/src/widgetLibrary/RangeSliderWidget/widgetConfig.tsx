@@ -1,12 +1,12 @@
-import { ReactComponent as SelectWidgetIcon } from "@/assets/widgetCover/select.svg"
+import { ReactComponent as RangeSliderWidgetIcon } from "@/assets/widgetCover/rangeSlider.svg"
 import i18n from "@/i18n/config"
 import { RESIZE_DIRECTION, WidgetConfig } from "@/widgetLibrary/interface"
 
 export const RANGE_SLIDER_WIDGET_CONFIG: WidgetConfig = {
   type: "RANGE_SLIDER_WIDGET",
   displayName: "rangeSlider",
-  widgetName: i18n.t("widget.rangeSlider.name"), // todo: 翻译
-  icon: <SelectWidgetIcon />,
+  widgetName: i18n.t("widget.range_slider.name"),
+  icon: <RangeSliderWidgetIcon />,
   keywords: ["Range Slider", "范围滑动输入条"],
   sessionType: "INPUTS",
   w: 25,

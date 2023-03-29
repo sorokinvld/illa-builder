@@ -20,6 +20,7 @@ export const WrappedSlider = forwardRef<HTMLDivElement, WrappedSliderProps>(
       prefixIcon,
       suffixIcon,
       hideOutput,
+      handleUpdateDsl,
       handleOnChange,
       getValidateMessage,
       handleUpdateMultiExecutionResult,
@@ -27,14 +28,13 @@ export const WrappedSlider = forwardRef<HTMLDivElement, WrappedSliderProps>(
     } = props
     const onChangeSliderValue = useCallback(
       (value: unknown) => {
-        console.log("value", value)
         new Promise((resolve) => {
           const message = getValidateMessage(value)
           handleUpdateMultiExecutionResult([
             {
               displayName,
               value: {
-                value: value || "",
+                value: value ?? 0,
                 validateMessage: message,
               },
             },
@@ -51,6 +51,7 @@ export const WrappedSlider = forwardRef<HTMLDivElement, WrappedSliderProps>(
         handleUpdateMultiExecutionResult,
       ],
     )
+
     const getIcon = (iconName: string) =>
       (iconName && AllData[iconName]) || null
     const currentPrefixIcon = getIcon(prefixIcon ?? "")
@@ -65,6 +66,11 @@ export const WrappedSlider = forwardRef<HTMLDivElement, WrappedSliderProps>(
         <Slider
           showTicks={!hideOutput}
           onChange={onChangeSliderValue}
+          // onChange={onChange}
+          // onChange={(value) => {
+          //   handleUpdateDsl({ value })
+          //   handleOnChange?.()
+          // }}
           isRange={false}
           {...props}
         />
@@ -140,7 +146,9 @@ export const SliderWidget: FC<SliderWidgetProps> = (props) => {
   )
 
   useEffect(() => {
+    console.log("-----", value)
     handleUpdateGlobalData?.(displayName, {
+      value,
       setValue: (value: number) => {
         handleUpdateDsl({ value })
       },

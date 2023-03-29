@@ -17,6 +17,7 @@ export interface WrappedSliderProps
   prefixIcon?: string
   suffixIcon?: string
   required?: boolean
+  handleUpdateDsl: (value: any) => void
   handleUpdateValue: (value: any) => void
   getValidateMessage: (value?: unknown) => string
   handleUpdateMultiExecutionResult: (
