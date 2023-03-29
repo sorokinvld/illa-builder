@@ -6,17 +6,29 @@ import { generatorEventHandlerConfig } from "@/widgetLibrary/PublicSector/utils/
 import { SLIDER_EVENT_HANDLER_CONFIG } from "@/widgetLibrary/SliderWidget/eventHandlerConfig"
 
 // todo: 补充翻译
-const baseWidgetName = "slider"
-export const SLIDER_PANEL_CONFIG: PanelConfig[] = [
+const baseWidgetName = "rangSlider"
+export const RANGE_SLIDER_PANEL_CONFIG: PanelConfig[] = [
   {
     id: `${baseWidgetName}-basic`,
     groupName: i18n.t("editor.inspect.setter_group.basic"),
     children: [
       {
+        id: `${baseWidgetName}-basic-default-start-value`,
+        labelName: i18n.t("editor.inspect.setter_label.default_start_value"), // todo
+        labelDesc: i18n.t(
+          "editor.inspect.setter_tips.slider.default_start_value",
+        ), // todo
+        attrName: "startValue",
+        setterType: "INPUT_SETTER",
+        expectedType: VALIDATION_TYPES.NUMBER,
+      },
+      {
         id: `${baseWidgetName}-basic-default-value`,
-        labelName: i18n.t("editor.inspect.setter_label.default_value"),
-        labelDesc: i18n.t("editor.inspect.setter_tips.slider.default_value"),
-        attrName: "value",
+        labelName: i18n.t("editor.inspect.setter_label.default_end_value"),
+        labelDesc: i18n.t(
+          "editor.inspect.setter_tips.slider.default_end_value",
+        ),
+        attrName: "endValue",
         setterType: "INPUT_SETTER",
         expectedType: VALIDATION_TYPES.NUMBER,
       },
